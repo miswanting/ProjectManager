@@ -1,4 +1,5 @@
 var svg = d3.select("#svg-goals")
+var btn_add = d3.select("#btn-goals-add")
 var width = 800,
     height = 600
 svg.attr("width", width)

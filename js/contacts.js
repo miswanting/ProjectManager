@@ -1,5 +1,5 @@
 var svg = d3.select("#svg-contacts")
-var btn_add = d3.select("#btn-add")
+var btn_add = d3.select("#btn-contacts-add")
 var width = 800,
     height = 600
 
