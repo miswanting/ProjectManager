@@ -21,6 +21,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <!-- 在所有脚本之后插入该行 -->
     <script>
         if (window.module) module = window.module;
@@ -66,7 +67,7 @@
             <div class="col-1 list-group" id="myList" role="tablist">
                 <!-- 总览 个人档案 目标规划 科技树 项目管理 联系人库 成就系统 历史存档 -->
                 <a class="list-group-item list-group-item-action rounded-0 active" data-toggle="list" href="#overview" role="tab">总览</a>
-                <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#profile" role="tab">个人档案</a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" href="#profile" role="tab">个人档案</a>
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#goals" role="tab">目标规划</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#tech-tree" role="tab">科技树</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#projects" role="tab">项目管理</a>
@@ -76,14 +77,13 @@
             </div>
             <div class="col-11 tab-content">
                 <div class="tab-pane active" id="overview" role="tabpanel">总览</div>
-                <div class="tab-pane" id="profile" role="tabpanel">个人档案</div>
+                <div class="tab-pane" id="profile" role="tabpanel">
+                    <canvas id="canvas-radar" class="chartjs" width="457" height="228" style="display: block; width: 457px; height: 228px;" data-vivaldi-spatnav-clickable="1"></canvas>
+                    <script src="js/overview.js"></script>
+                </div>
                 <div class="tab-pane" id="goals" role="tabpanel">
                     <p>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-primary" id="btn-add">+</button>
-                            <button type="button" class="btn btn-primary">-</button>
-                            <button type="button" class="btn btn-primary"></button>
-                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-goals-add">+</button>
                     </p>
                     <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
                     <script src="js/goals.js"></script>
@@ -91,6 +91,9 @@
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
                 <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>
                 <div class="tab-pane" id="contacts" role="tabpanel">
+                    <p>
+                        <button type="button" class="btn btn-primary" id="btn-contacts-add">+</button>
+                    </p>
                     <svg class="img-fluid" id="svg-contacts" width="100%" height="100%"></svg>
                     <script src="js/contacts.js"></script>
                 </div>
