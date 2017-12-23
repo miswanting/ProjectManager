@@ -1,4 +1,4 @@
-var svg = d3.select("#svg-goals")
+var svg = d3.select("#svg-contacts")
 var btn_add = d3.select("#btn-add")
 var width = 800,
     height = 600
@@ -102,11 +102,11 @@ var link = svg.append("g")
     .attr("stroke", "#000000")
     .attr("stroke-width", 2)
     .on("mouseover", function () {
-        d3.select(this).attr("stroke", "#ff0000")
+        d3.select(this).attr("stroke", "#00f")
         d3.select(this).attr("stroke-width", 5)
     })
     .on("mouseout", function () {
-        d3.select(this).attr("stroke", "#000000")
+        d3.select(this).attr("stroke", "#000")
         d3.select(this).attr("stroke-width", 2)
     })
     .on("click", function () {
@@ -122,11 +122,11 @@ var node = svg.append("g")
     .attr("stroke-width", 2)
     .on("mouseover", function () {
         d3.select(this).attr("r", 15)
-        d3.select(this).attr("fill", "#ff0000")
+        d3.select(this).attr("fill", "#00f")
     })
     .on("mouseout", function () {
         d3.select(this).attr("r", 10)
-        d3.select(this).attr("fill", "#000000")
+        d3.select(this).attr("fill", "#000")
     })
     .on("click", function () {
         alert()
