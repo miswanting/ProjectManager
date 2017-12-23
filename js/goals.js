@@ -73,12 +73,12 @@ nodes.append("circle")
     .attr("stroke", "#fff")
     .attr("stroke-width", 2)
     .on("mouseover", function () {
-        d3.select(this).attr("stroke", "#00f")
-        d3.select(this).attr("stroke-width", 5)
+        d3.select(this).attr("r", 10)
+        d3.select(this).attr("fill", "#00f")
     })
     .on("mouseout", function () {
-        d3.select(this).attr("stroke", "#fff")
-        d3.select(this).attr("stroke-width", 2)
+        d3.select(this).attr("r", 5)
+        d3.select(this).attr("fill", "#000")
     })
 nodes.append("text")
     .attr("x", function (d) {
