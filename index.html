@@ -70,7 +70,7 @@
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#goals" role="tab">目标规划</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#tech-tree" role="tab">科技树</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#projects" role="tab">项目管理</a>
-                <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#contacts" role="tab">联系人库</a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" href="#contacts" role="tab">联系人库</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#achievements" role="tab">成就系统</a>
                 <a class="list-group-item list-group-item-action rounded-0 disabled" data-toggle="list" href="#history" role="tab">历史存档</a>
             </div>
@@ -90,7 +90,10 @@
                 </div>
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
                 <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>
-                <div class="tab-pane" id="contacts" role="tabpanel">联系人库</div>
+                <div class="tab-pane" id="contacts" role="tabpanel">
+                    <svg class="img-fluid" id="svg-contacts" width="100%" height="100%"></svg>
+                    <script src="js/contacts.js"></script>
+                </div>
                 <div class="tab-pane" id="achievements" role="tabpanel">成就系统</div>
                 <div class="tab-pane" id="history" role="tabpanel">历史存档</div>
             </div>
