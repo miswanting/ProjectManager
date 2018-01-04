@@ -42,6 +42,7 @@ var stratify_goals = d3.stratify()
     })(data);
 var link = svg_goals.append("g")
     .attr("class", "links")
+    .attr("id", "goals-links")
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
     })
@@ -60,6 +61,7 @@ var link = svg_goals.append("g")
     .attr("fill", "none")
 var nodes = svg_goals.append("g")
     .attr("class", "nodes")
+    .attr("id", "goals-nodes")
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
     })
