@@ -1,9 +1,9 @@
-var svg = d3.select("#svg-goals")
-var btn_add = d3.select("#btn-goals-add")
+var svg_goals = d3.select("#svg-goals")
+var btn_goals_add = d3.select("#btn-goals-add")
 var width = 800,
     height = 600
-svg.attr("width", width)
-svg.attr("height", height)
+svg_goals.attr("width", width)
+svg_goals.attr("height", height)
 var data = [{
     "name": "Eve",
     "parent": ""
@@ -34,13 +34,13 @@ var data = [{
 }]
 var tree = d3.tree()
     .size([height - 100, width - 100]);
-var stratify = d3.stratify()
+var stratify_goals = d3.stratify()
     .id(function (d) {
         return d.name;
     }).parentId(function (d) {
         return d.parent;
     })(data);
-var link = svg.append("g")
+var link = svg_goals.append("g")
     .attr("class", "links")
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
@@ -58,13 +58,13 @@ var link = svg.append("g")
     .attr("stroke", "#000")
     .attr("stroke-width", 2)
     .attr("fill", "none")
-var nodes = svg.append("g")
+var nodes = svg_goals.append("g")
     .attr("class", "nodes")
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
     })
     .selectAll("g")
-    .data(stratify.descendants())
+    .data(stratify_goals.descendants())
     .enter().append("g")
     .attr("transform", function (d) {
         return "translate(" + d.y + "," + d.x + ")"

@@ -1,11 +1,9 @@
-var svg = d3.select("#svg-contacts")
-var btn_add = d3.select("#btn-contacts-add")
+var svg_contacts = d3.select("#svg-contacts")
+var btn_contacts_add = d3.select("#btn-contacts-add")
 var width = 800,
     height = 600
-
-
-svg.attr("width", width)
-svg.attr("height", height)
+svg_contacts.attr("width", width)
+svg_contacts.attr("height", height)
 var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody()) // 节点间的作用力
     .force("link", d3.forceLink()) // 连线作用力
@@ -44,7 +42,7 @@ var edges = [{
     source: 1,
     target: 6
 }];
-btn_add.on("click", function () {
+btn_contacts_add.on("click", function () {
     var newNode = {
         name: "123"
     }
@@ -54,7 +52,7 @@ btn_add.on("click", function () {
     }
     edges.push(newLink)
     nodes.push(newNode)
-    svg.select(".links")
+    svg_contacts.select(".links")
         .selectAll("line")
         .data(edges)
         .enter().append("line")
@@ -71,7 +69,7 @@ btn_add.on("click", function () {
         .on("click", function () {
             alert()
         })
-    svg.append(".nodes")
+    svg_contacts.append(".nodes")
         .selectAll("circle")
         .data(nodes)
         .enter().append("circle")
@@ -94,7 +92,7 @@ btn_add.on("click", function () {
             .on("drag", dragged)
             .on("end", dragended));
 })
-var link = svg.append("g")
+var link = svg_contacts.append("g")
     .attr("class", "links")
     .selectAll("line")
     .data(edges)
@@ -112,7 +110,7 @@ var link = svg.append("g")
     .on("click", function () {
         alert()
     })
-var node = svg.append("g")
+var node = svg_contacts.append("g")
     .attr("class", "nodes")
     .selectAll("circle")
     .data(nodes)
@@ -136,7 +134,7 @@ var node = svg.append("g")
         .on("drag", dragged)
         .on("end", dragended));
 
-svg.on("click", function () {
+svg_contacts.on("click", function () {
     alert(1)
 })
 simulation
