@@ -81,12 +81,34 @@
                     <canvas id="canvas-radar" class="chartjs" width="457" height="228" style="display: block; width: 457px; height: 228px;" data-vivaldi-spatnav-clickable="1"></canvas>
                     <script src="js/overview.js"></script>
                 </div>
-                <div class="tab-pane" id="goals" role="tabpanel">
-                    <p>
-                        <button type="button" class="btn btn-primary" id="btn-goals-add">+</button>
-                    </p>
-                    <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
-                    <script src="js/goals.js"></script>
+                <div class="tab-pane container-fluid px-0" id="goals" role="tabpanel">
+                    <div class="row no-gutters">
+                        <div class="col-9">
+                            <p>
+                                <button type="button" class="btn btn-primary" id="btn-goals-add">+</button>
+                            </p>
+                            <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
+                            <script src="js/goals.js"></script>
+                        </div>
+                        <div class="col-3" id="goals-detail">
+                            <form>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="goals-name" placeholder="目标名称">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="goals-hash">#123456</span>
+                                    </div>
+                                </div>
+                                <textarea class="form-control" id="goals-description" placeholder="描述"></textarea>
+                                <div class="form-group form-inline">
+                                    <label for="goals-parentlist" class="col-form-label">父节点</label>
+                                    <select class="form-control" id="goals-parentlist">
+                                        <option>Default select</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">应用</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
                 <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>
