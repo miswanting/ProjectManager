@@ -14,6 +14,8 @@
             module = undefined;
         }
     </script>
+    <!--  -->
+
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
@@ -22,10 +24,12 @@
         crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
     <!-- 在所有脚本之后插入该行 -->
     <script>
         if (window.module) module = window.module;
     </script>
+    <!--  -->
 </head>
 
 <body>
@@ -60,6 +64,9 @@
                 <input class="form-control mr-sm-2" type="search" placeholder="关键字" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
             </form>
+            <button type="button" class="close ml-3 mb-2" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     </nav>
     <div class="container-fluid px-0">
@@ -85,30 +92,43 @@
                     <div class="row no-gutters">
                         <div class="col-9">
                             <p>
-                                <button type="button" class="btn btn-primary" id="btn-goals-add">+</button>
+                                <!-- <button type="button" class="btn btn-primary" id="btn-goals-add">+</button> -->
+                                <button type="button" class="btn btn-primary" id="btn-goals-add-show" data-toggle="modal" data-target="#goals-add">+</button>
                             </p>
                             <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
-                            <script src="js/goals.js"></script>
                         </div>
                         <div class="col-3" id="goals-detail">
-                            <form>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="goals-name" placeholder="目标名称">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text" id="goals-hash">#123456</span>
-                                    </div>
-                                </div>
-                                <textarea class="form-control" id="goals-description" placeholder="描述"></textarea>
-                                <div class="form-group form-inline">
-                                    <label for="goals-parentlist" class="col-form-label">父节点</label>
-                                    <select class="form-control" id="goals-parentlist">
-                                        <option>Default select</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">应用</button>
-                            </form>
                         </div>
                     </div>
+                    <div class="modal" id="goals-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">新增目标</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <input type="text" class="form-control" id="goals-name" placeholder="目标名称">
+                                        <textarea class="form-control" id="goals-description" placeholder="描述"></textarea>
+                                        <div class="form-group form-inline">
+                                            <label for="goals-parentlist" class="col-form-label">父节点：</label>
+                                            <select class="form-control" id="goals-parentlist">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn btn-primary" id="btn-goals-add" data-dismiss="modal">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script src="js/goals.js"></script>
                 </div>
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
                 <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>

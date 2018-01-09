@@ -1,5 +1,6 @@
 var svg_goals = d3.select("#svg-goals")
 var btn_goals_add = d3.select("#btn-goals-add")
+var btn_goals_add_show = d3.select("#btn-goals-add-show")
 var width = 800,
     height = 600
 svg_goals.attr("width", width)
@@ -99,9 +100,12 @@ nodes.append("text")
         return d.id.substring(d.id.lastIndexOf(".") + 1);
     })
 btn_goals_add.on("click", function () {
+    if (d3.select("#goals-name")._groups[0][0].value == "") {
+        d3.select("#goals-name")._groups[0][0].value = "[NONE]"
+    }
     data.push({
-        "name": "HYH",
-        "parent": "Abel"
+        "name": d3.select("#goals-name")._groups[0][0].value,
+        "parent": d3.select("#goals-parentlist")._groups[0][0].value
     })
     stratify_goals = d3.stratify()
         .id(function (d) {
@@ -115,7 +119,6 @@ btn_goals_add.on("click", function () {
         .data(tree(stratify_goals).links())
         // .exit().remove()
         .enter().append("path")
-    console.log(link)
     svg_goals.select("#goals-links")
         .selectAll("path")
         .data(tree(stratify_goals).links())
@@ -173,9 +176,29 @@ btn_goals_add.on("click", function () {
         .text(function (d) {
             return d.id.substring(d.id.lastIndexOf(".") + 1);
         })
-    console.log(d3)
-    var a = JSON.stringify(d3)
-    console.log(a)
-    var b = JSON.parse(a)
-    console.log(b)
+})
+btn_goals_add_show.on("click", function () {
+    d3.select("#goals-name")._groups[0][0].value = ""
+    stratify_goals = d3.stratify()
+        .id(function (d) {
+            return d.name;
+        }).parentId(function (d) {
+            return d.parent;
+        })(data)
+    var l_node = stratify_goals.descendants()
+    var l_id = []
+    for (var i = 0; i < l_node.length; i++) {
+        l_id.push(l_node[i].id)
+    }
+    console.log(l_id)
+    d3.select("#goals-parentlist")
+        .selectAll("option")
+        .remove()
+    d3.select("#goals-parentlist")
+        .selectAll("option")
+        .data(l_id)
+        .enter().append("option")
+        .text(function (d) {
+            return d
+        })
 })
