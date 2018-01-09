@@ -80,16 +80,20 @@
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#projects" role="tab">项目管理</a>
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#contacts" role="tab">联系人库</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#achievements" role="tab">成就系统</a>
-                <a class="list-group-item list-group-item-action rounded-0 disabled" data-toggle="list" href="#history" role="tab">历史存档</a>
+                <a class="list-group-item list-group-item-action rounded-0 disabled" data-toggle="list" href="#history" role="tab">历史纪录</a>
             </div>
             <div class="col-11 tab-content">
+                <!-- 总览 -->
                 <div class="tab-pane active" id="overview" role="tabpanel">总览</div>
+                <!-- 个人档案 -->
                 <div class="tab-pane" id="profile" role="tabpanel">
                     <canvas id="canvas-radar" class="chartjs" width="457" height="228" style="display: block; width: 457px; height: 228px;" data-vivaldi-spatnav-clickable="1"></canvas>
                     <script src="js/overview.js"></script>
                 </div>
+                <!-- 目标规划 -->
                 <div class="tab-pane container-fluid px-0" id="goals" role="tabpanel">
                     <div class="row no-gutters">
+                        <!-- SVG页面 -->
                         <div class="col-9">
                             <p>
                                 <!-- <button type="button" class="btn btn-primary" id="btn-goals-add">+</button> -->
@@ -97,18 +101,22 @@
                             </p>
                             <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
                         </div>
+                        <!-- 详情页面 -->
                         <div class="col-3" id="goals-detail">
                         </div>
                     </div>
+                    <!-- modal页面 -->
                     <div class="modal" id="goals-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
+                                <!-- modal 页眉 -->
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">新增目标</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <!-- modal 主体 -->
                                 <div class="modal-body">
                                     <form>
                                         <input type="text" class="form-control" id="goals-name" placeholder="目标名称">
@@ -121,6 +129,7 @@
                                         </div>
                                     </form>
                                 </div>
+                                <!-- modal 页脚 -->
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                                     <button type="button" class="btn btn-primary" id="btn-goals-add" data-dismiss="modal">确定</button>
@@ -130,8 +139,11 @@
                     </div>
                     <script src="js/goals.js"></script>
                 </div>
+                <!-- 科技树 -->
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
+                <!-- 项目管理 -->
                 <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>
+                <!-- 联系人库 -->
                 <div class="tab-pane" id="contacts" role="tabpanel">
                     <p>
                         <button type="button" class="btn btn-primary" id="btn-contacts-add">+</button>
@@ -139,8 +151,10 @@
                     <svg class="img-fluid" id="svg-contacts" width="100%" height="100%"></svg>
                     <script src="js/contacts.js"></script>
                 </div>
+                <!-- 成就系统 -->
                 <div class="tab-pane" id="achievements" role="tabpanel">成就系统</div>
-                <div class="tab-pane" id="history" role="tabpanel">历史存档</div>
+                <!-- 历史纪录 -->
+                <div class="tab-pane" id="history" role="tabpanel">历史纪录</div>
             </div>
         </div>
     </div>
