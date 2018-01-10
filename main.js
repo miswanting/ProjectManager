@@ -1,6 +1,8 @@
+const fs = require('fs');
 const {
     app,
     BrowserWindow,
+    ipcMain,
     Menu
 } = require('electron')
 const path = require('path')
@@ -10,6 +12,7 @@ const url = require('url')
 // 当 JavaScript 对象被垃圾回收， window 会被自动地关闭
 let win
 
+var dbData = JSON.parse(fs.readFileSync('db\\db.json', 'utf8'))
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -41,6 +44,18 @@ function createWindow() {
         // 通常会把多个 window 对象存放在一个数组里面，
         // 与此同时，你应该删除相应的元素。
         win = null
+    })
+
+    // 提供数据库数据
+    ipcMain.on('synchronous-message', (event, arg) => {
+        var pkg = JSON.parse(arg)
+        if (pkg.cmd == 'db') {
+            event.returnValue = dbData
+        } else if (pkg.cmd == 'save') {
+            dbData = pkg.data
+            fs.writeFileSync('db\\db.json', JSON.stringify(dbData))
+            event.returnValue = true
+        }
     })
 }
 

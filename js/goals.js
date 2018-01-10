@@ -1,3 +1,6 @@
+const {
+    ipcRenderer
+} = require('electron')
 var svg_goals = d3.select("#svg-goals") // SVG元素的引用
 var btn_goals_add_show = d3.select("#btn-goals-add-show") // 新增节点页面显示按钮
 var btn_goals_add = d3.select("#btn-goals-add") // 新增节点确认按钮
@@ -5,34 +8,18 @@ var width = 800,
     height = 600
 svg_goals.attr("width", width)
 svg_goals.attr("height", height)
-var data = [{
-    "name": "Eve",
-    "parent": ""
-}, {
-    "name": "Cain",
-    "parent": "Eve"
-}, {
-    "name": "Seth",
-    "parent": "Eve"
-}, {
-    "name": "Enos",
-    "parent": "Seth"
-}, {
-    "name": "Noam",
-    "parent": "Seth"
-}, {
-    "name": "Abel",
-    "parent": "Eve"
-}, {
-    "name": "Awan",
-    "parent": "Eve"
-}, {
-    "name": "Enoch",
-    "parent": "Awan"
-}, {
-    "name": "Azura",
-    "parent": "Eve"
-}]
+var data = ipcRenderer.sendSync('synchronous-message', JSON.stringify({
+    'cmd': 'db'
+}))
+var currentSelect = ""
+// data.push({
+//     "name": "d3.select()._groups[0][0].value",
+//     "parent": "d3.select()._groups[0][0].value"
+// })
+// ipcRenderer.sendSync('synchronous-message', JSON.stringify({
+//     'cmd': 'save',
+//     'data': data
+// }))
 var tree = d3.tree()
     .size([height - 100, width - 100]);
 var stratify_goals = d3.stratify()
