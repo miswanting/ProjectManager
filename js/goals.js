@@ -3,6 +3,7 @@ const {
 } = require('electron')
 var svg_goals = d3.select("#svg-goals") // SVG元素的引用
 var btn_goals_add_show = d3.select("#btn-goals-add-show") // 新增节点页面显示按钮
+var btn_goals_remove = d3.select("#btn-goals-remove") // 新增节点页面显示按钮
 var btn_goals_add = d3.select("#btn-goals-add") // 新增节点确认按钮
 var width = 800,
     height = 600
@@ -77,6 +78,7 @@ nodes.append("circle")
         d3.select(this).attr("fill", "#000")
     })
     .on("click", function () {
+        currentSelect = d3.select(this)._groups[0][0].__data__.id
         d3.select("#goals-detail")
             .text(d3.select(this)._groups[0][0].__data__.id)
     })
@@ -105,7 +107,6 @@ btn_goals_add_show.on("click", function () {
     for (var i = 0; i < l_node.length; i++) {
         l_id.push(l_node[i].id)
     }
-    console.log(l_id)
     d3.select("#goals-parentlist")
         .selectAll("option")
         .remove()
@@ -117,6 +118,20 @@ btn_goals_add_show.on("click", function () {
             return d
         })
 })
+
+btn_goals_remove.on("click", function () {
+    if (currentSelect == "") {
+        alert('请选择一项！')
+    } else {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].name == currentSelect) {
+                data.splice(i, 1)
+                updateTree()
+            }
+        }
+    }
+})
+
 // 新增节点确认按钮
 btn_goals_add.on("click", function () {
     if (d3.select("#goals-name")._groups[0][0].value == "") {
@@ -136,7 +151,6 @@ btn_goals_add.on("click", function () {
     link = svg_goals.select("#goals-links")
         .selectAll("path")
         .data(tree(stratify_goals).links())
-        // .exit().remove()
         .enter().append("path")
     svg_goals.select("#goals-links")
         .selectAll("path")
@@ -195,4 +209,79 @@ btn_goals_add.on("click", function () {
         .text(function (d) {
             return d.id.substring(d.id.lastIndexOf(".") + 1);
         })
+    ipcRenderer.sendSync('synchronous-message', JSON.stringify({
+        'cmd': 'save',
+        'data': data
+    }))
 })
+
+function updateTree() {
+    stratify_goals = d3.stratify()
+        .id(function (d) {
+            return d.name;
+        }).parentId(function (d) {
+            return d.parent;
+        })(data)
+
+    link = svg_goals.select("#goals-links")
+        .selectAll("path")
+        .data(tree(stratify_goals).links())
+        .enter().append("path")
+    svg_goals.select("#goals-links")
+        .selectAll("path")
+        .data(tree(stratify_goals).links())
+        .attr("d", d3.linkHorizontal()
+            .x(function (d) {
+                return d.y;
+            })
+            .y(function (d) {
+                return d.x;
+            }))
+        .attr("stroke", "#000")
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+
+    nodes = svg_goals.select("#goals-nodes")
+        .selectAll("g")
+        .data(stratify_goals.descendants())
+        .enter().append("g")
+        .attr("transform", function (d) {
+            return "translate(" + d.y + "," + d.x + ")"
+        })
+    nodes.append("circle")
+    nodes.append("text")
+    svg_goals.select("#goals-nodes")
+        .selectAll("g")
+        .attr("transform", function (d) {
+            return "translate(" + d.y + "," + d.x + ")"
+        })
+    svg_goals.select("#goals-nodes")
+        .selectAll("circle")
+        .attr("r", 5)
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 2)
+        .on("mouseover", function () {
+            d3.select(this).attr("r", 10)
+            d3.select(this).attr("fill", "#00f")
+        })
+        .on("mouseout", function () {
+            d3.select(this).attr("r", 5)
+            d3.select(this).attr("fill", "#000")
+        })
+        .on("click", function () {
+            d3.select("#goals-detail")
+                .text(d3.select(this)._groups[0][0].__data__.id)
+        })
+    svg_goals.select("#goals-nodes")
+        .selectAll("text")
+        .attr("x", function (d) {
+            return -6
+        })
+        .attr("y", function (d) {
+            return 20
+        })
+        .data(stratify_goals.descendants())
+        .text(function (d) {
+            return d.id.substring(d.id.lastIndexOf(".") + 1);
+        })
+}
