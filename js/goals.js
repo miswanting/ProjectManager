@@ -13,23 +13,9 @@ var data = ipcRenderer.sendSync('synchronous-message', JSON.stringify({
     'cmd': 'db'
 }))
 var currentSelect = ""
-// data.push({
-//     "name": "d3.select()._groups[0][0].value",
-//     "parent": "d3.select()._groups[0][0].value"
-// })
-// ipcRenderer.sendSync('synchronous-message', JSON.stringify({
-//     'cmd': 'save',
-//     'data': data
-// }))
 var tree = d3.tree()
     .size([height - 100, width - 100]);
-var stratify_goals = d3.stratify()
-    .id(function (d) {
-        return d.name;
-    }).parentId(function (d) {
-        return d.parent;
-    })(data);
-// 连线集合
+var stratify_goals
 var link = svg_goals.append("g")
     .attr("class", "links")
     .attr("id", "goals-links")
@@ -37,62 +23,15 @@ var link = svg_goals.append("g")
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
     })
-// 每根连线
-link.selectAll("#goals-links")
-    .data(tree(stratify_goals).links())
-    .enter().append("path")
-    .attr("d", d3.linkHorizontal()
-        .x(function (d) {
-            return d.y;
-        })
-        .y(function (d) {
-            return d.x;
-        }))
-    .attr("stroke", "#000")
-    .attr("stroke-width", 2)
-    .attr("fill", "none") // 不填充
-// 节点集合
 var nodes = svg_goals.append("g")
     .attr("class", "nodes")
     .attr("id", "goals-nodes")
+    // 整体偏移
     .attr("transform", function (d) {
         return "translate(" + 50 + "," + 0 + ")"
     })
-    .selectAll("g")
-    .data(stratify_goals.descendants())
-    .enter().append("g")
-    .attr("transform", function (d) {
-        return "translate(" + d.y + "," + d.x + ")"
-    })
-// 圆点
-nodes.append("circle")
-    .attr("r", 5)
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 2)
-    .on("mouseover", function () {
-        d3.select(this).attr("r", 10)
-        d3.select(this).attr("fill", "#00f")
-    })
-    .on("mouseout", function () {
-        d3.select(this).attr("r", 5)
-        d3.select(this).attr("fill", "#000")
-    })
-    .on("click", function () {
-        currentSelect = d3.select(this)._groups[0][0].__data__.id
-        d3.select("#goals-detail")
-            .text(d3.select(this)._groups[0][0].__data__.id)
-    })
-// 文本
-nodes.append("text")
-    .attr("x", function (d) {
-        return -6
-    })
-    .attr("y", function (d) {
-        return 20
-    })
-    .text(function (d) {
-        return d.id.substring(d.id.lastIndexOf(".") + 1);
-    })
+updateTree()
+
 // 新增节点页面显示按钮
 btn_goals_add_show.on("click", function () {
     d3.select("#goals-name")._groups[0][0].value = ""
@@ -141,80 +80,14 @@ btn_goals_add.on("click", function () {
         "name": d3.select("#goals-name")._groups[0][0].value,
         "parent": d3.select("#goals-parentlist")._groups[0][0].value
     })
-    stratify_goals = d3.stratify()
-        .id(function (d) {
-            return d.name;
-        }).parentId(function (d) {
-            return d.parent;
-        })(data)
-
-    link = svg_goals.select("#goals-links")
-        .selectAll("path")
-        .data(tree(stratify_goals).links())
-        .enter().append("path")
-    svg_goals.select("#goals-links")
-        .selectAll("path")
-        .data(tree(stratify_goals).links())
-        .attr("d", d3.linkHorizontal()
-            .x(function (d) {
-                return d.y;
-            })
-            .y(function (d) {
-                return d.x;
-            }))
-        .attr("stroke", "#000")
-        .attr("stroke-width", 2)
-        .attr("fill", "none")
-
-    nodes = svg_goals.select("#goals-nodes")
-        .selectAll("g")
-        .data(stratify_goals.descendants())
-        .enter().append("g")
-        .attr("transform", function (d) {
-            return "translate(" + d.y + "," + d.x + ")"
-        })
-    nodes.append("circle")
-    nodes.append("text")
-    svg_goals.select("#goals-nodes")
-        .selectAll("g")
-        .attr("transform", function (d) {
-            return "translate(" + d.y + "," + d.x + ")"
-        })
-    svg_goals.select("#goals-nodes")
-        .selectAll("circle")
-        .attr("r", 5)
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 2)
-        .on("mouseover", function () {
-            d3.select(this).attr("r", 10)
-            d3.select(this).attr("fill", "#00f")
-        })
-        .on("mouseout", function () {
-            d3.select(this).attr("r", 5)
-            d3.select(this).attr("fill", "#000")
-        })
-        .on("click", function () {
-            d3.select("#goals-detail")
-                .text(d3.select(this)._groups[0][0].__data__.id)
-        })
-    svg_goals.select("#goals-nodes")
-        .selectAll("text")
-        .attr("x", function (d) {
-            return -6
-        })
-        .attr("y", function (d) {
-            return 20
-        })
-        .data(stratify_goals.descendants())
-        .text(function (d) {
-            return d.id.substring(d.id.lastIndexOf(".") + 1);
-        })
+    updateTree()
     ipcRenderer.sendSync('synchronous-message', JSON.stringify({
         'cmd': 'save',
         'data': data
     }))
 })
 
+// 全局智能刷新
 function updateTree() {
     stratify_goals = d3.stratify()
         .id(function (d) {
@@ -222,8 +95,11 @@ function updateTree() {
         }).parentId(function (d) {
             return d.parent;
         })(data)
-
-    link = svg_goals.select("#goals-links")
+    // link = svg_goals.select("#goals-links")
+    svg_goals.select("#goals-links")
+        .selectAll("path")
+        .remove()
+    svg_goals.select("#goals-links")
         .selectAll("path")
         .data(tree(stratify_goals).links())
         .enter().append("path")
@@ -241,6 +117,9 @@ function updateTree() {
         .attr("stroke-width", 2)
         .attr("fill", "none")
 
+    svg_goals.select("#goals-nodes")
+        .selectAll("g")
+        .remove()
     nodes = svg_goals.select("#goals-nodes")
         .selectAll("g")
         .data(stratify_goals.descendants())
@@ -265,10 +144,13 @@ function updateTree() {
             d3.select(this).attr("fill", "#00f")
         })
         .on("mouseout", function () {
-            d3.select(this).attr("r", 5)
-            d3.select(this).attr("fill", "#000")
+            if (d3.select(this)._groups[0][0].__data__.id != currentSelect) {
+                d3.select(this).attr("r", 5)
+                d3.select(this).attr("fill", "#000")
+            }
         })
         .on("click", function () {
+            currentSelect = d3.select(this)._groups[0][0].__data__.id
             d3.select("#goals-detail")
                 .text(d3.select(this)._groups[0][0].__data__.id)
         })
