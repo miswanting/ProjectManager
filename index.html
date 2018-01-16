@@ -97,12 +97,6 @@
                     <div class="row no-gutters">
                         <!-- SVG页面 -->
                         <div class="col-9">
-                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar">
-                                <div class="btn-group mr-2" role="group" aria-label="文字解释">
-                                    <button type="button" class="btn btn-primary" id="btn-goals-add-show" data-toggle="modal" data-target="#goals-add">+</button>
-                                    <button type="button" class="btn btn-primary" id="btn-goals-remove">-</button>
-                                </div>
-                            </div>
                             <svg class="img-fluid" id="svg-goals" width="100%" height="100%"></svg>
                         </div>
                         <!-- 详情页面 -->
@@ -123,38 +117,6 @@
                                     <button type="button" class="btn btn-danger" id="btn-goals-detail-remove">删除</button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                    <!-- modal页面 -->
-                    <div class="modal" id="goals-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <!-- modal 页眉 -->
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">新增目标</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <!-- modal 主体 -->
-                                <div class="modal-body">
-                                    <form>
-                                        <input type="text" class="form-control" id="goals-name" placeholder="目标名称">
-                                        <textarea class="form-control" id="goals-description" placeholder="描述"></textarea>
-                                        <div class="form-group form-inline">
-                                            <label for="goals-parentlist" class="col-form-label">父节点：</label>
-                                            <select class="form-control" id="goals-parentlist">
-                                                <option></option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <!-- modal 页脚 -->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                    <button type="button" class="btn btn-primary" id="btn-goals-add" data-dismiss="modal">确定</button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <script src="js/goals.js"></script>

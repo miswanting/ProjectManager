@@ -2,9 +2,6 @@ const {
     ipcRenderer
 } = require('electron')
 var svg_goals = d3.select("#svg-goals") // SVG元素的引用
-var btn_goals_add_show = d3.select("#btn-goals-add-show") // 新增节点页面显示按钮
-var btn_goals_remove = d3.select("#btn-goals-remove") // 新增节点页面显示按钮
-var btn_goals_add = d3.select("#btn-goals-add") // 新增节点确认按钮
 
 var btn_goals_detail_refresh = d3.select("#btn-goals-detail-refresh") // 详细信息刷新数据按钮
 var btn_goals_detail_add = d3.select("#btn-goals-detail-add") // 详细信息新增子节点按钮
@@ -37,72 +34,6 @@ var nodes = svg_goals.append("g")
         return "translate(" + 50 + "," + 0 + ")"
     })
 updateTree()
-
-// 新增节点页面显示按钮
-btn_goals_add_show.on("click", function () {
-    d3.select("#goals-name")._groups[0][0].value = ""
-    stratify_goals = d3.stratify()
-        .id(function (d) {
-            return d.hash;
-        }).parentId(function (d) {
-            return d.parentHash;
-        })(data)
-    var l_node = stratify_goals.descendants()
-    console.log(l_node)
-    var l_id = []
-    for (var i = 0; i < l_node.length; i++) {
-        l_id.push(l_node[i].id)
-    }
-    d3.select("#goals-parentlist")
-        .selectAll("option")
-        .remove()
-    d3.select("#goals-parentlist")
-        .selectAll("option")
-        .data(l_id)
-        .enter().append("option")
-        .text(function (d) {
-            return d
-        })
-})
-
-// 删除节点按钮
-btn_goals_remove.on("click", function () {
-    if (currentSelect == "") { // 排除空选择
-        alert('请选择一项！')
-    } else {
-        flag = false // 是否拥有子节点
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].parent == currentSelect) {
-                flag = true
-            }
-        }
-        if (flag) {
-            alert("不能直接删除非空节点！")
-        } else {
-            for (var i = 0; i < data.length; i++) { // 修改data并更新
-                if (data[i].name == currentSelect) {
-                    data.splice(i, 1)
-                    updateTree()
-                    saveData()
-                }
-            }
-        }
-    }
-})
-
-// 新增节点确认按钮
-btn_goals_add.on("click", function () {
-    if (d3.select("#goals-name")._groups[0][0].value == "") {
-        d3.select("#goals-name")._groups[0][0].value = "[NONE]"
-    }
-    data.push({
-        "hash": getHash(),
-        "parentHash": d3.select("#goals-parentlist")._groups[0][0].value,
-        "name": d3.select("#goals-name")._groups[0][0].value
-    })
-    updateTree()
-    saveData()
-})
 
 // 更新数据
 btn_goals_detail_refresh.on("click", function () {
@@ -192,7 +123,7 @@ btn_goals_detail_remove.on("click", function () {
     }
 })
 
-// ## 私有函数 ## //
+// ## 私有函数 ## // -- -- -- --
 
 // 全局智能刷新
 function updateTree() {
