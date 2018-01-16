@@ -104,8 +104,6 @@ btn_goals_add.on("click", function () {
     saveData()
 })
 
-
-// var btn_goals_detail_refresh = d3.select("#btn-goals-detail-refresh") // 详细信息刷新数据按钮
 // 更新数据
 btn_goals_detail_refresh.on("click", function () {
     for (var i = 0; i < data.length; i++) { // 更新
@@ -118,13 +116,58 @@ btn_goals_detail_refresh.on("click", function () {
     updateTree()
     saveData()
 })
-// var btn_goals_detail_add = d3.select("#btn-goals-detail-add") // 详细信息新增子节点按钮
+
+// 新增节点
+btn_goals_detail_add.on("click", function () {
+    var newNode = {
+        "hash": getHash(),
+        "parentHash": d3.select("#goals-detail-hash").text().split("@")[1],
+        "name": "",
+        "description": ""
+    }
+    data.push(newNode)
+    d3.select("#goals-detail-hash").text("@" + newNode.hash)
+    d3.select("#goals-detail-name").node().value = newNode.name
+    d3.select("#goals-detail-description").node().value = newNode.description
+    currentSelect = newNode.hash
+    // 详细页面父节点列表生成
+    stratify_goals = d3.stratify()
+        .id(function (d) {
+            return d.hash;
+        }).parentId(function (d) {
+            return d.parentHash;
+        })(data)
+    var l_node = stratify_goals.descendants()
+    var l_id = []
+    selectedIndex = 0
+    for (var i = 0; i < l_node.length; i++) {
+        if (l_node[i].data.hash == getDataByHash(newNode.hash).parentHash) {
+            selectedIndex = i
+        }
+        l_id.push(l_node[i].data.name + "@" + l_node[i].data.hash)
+    }
+    d3.select("#goals-detail-parentlist")
+        .selectAll("option")
+        .remove()
+    d3.select("#goals-detail-parentlist")
+        .selectAll("option")
+        .data(l_id)
+        .enter().append("option")
+        .text(function (d) {
+            return d
+        })
+    d3.select("#goals-detail-parentlist").node().selectedIndex = selectedIndex
+    //
+    updateTree()
+    saveData()
+})
 // var btn_goals_detail_remove = d3.select("#btn-goals-detail-remove") // 详细信息删除子节点按钮
 
 // ## 私有函数 ## //
 
 // 全局智能刷新
 function updateTree() {
+    console.log(data[0].hash)
     // 兼容性检查
     for (var i = 0; i < data.length; i++) {
         if (!data[i].description) {
@@ -132,6 +175,7 @@ function updateTree() {
         }
     }
     // 刷新数据
+    console.log(data)
     stratify_goals = d3.stratify()
         .id(function (d) {
             return d.hash;
@@ -230,7 +274,7 @@ function updateTree() {
             d3.select("#goals-detail-parentlist").node().selectedIndex = selectedIndex
             //
 
-            currentSelect = d3.select(this)._groups[0][0].__data__.id
+            currentSelect = d3.select(this)._groups[0][0].__data__.data.hash
         })
     svg_goals.select("#goals-nodes")
         .selectAll("text")
@@ -246,6 +290,7 @@ function updateTree() {
             return d.data.name
         })
     svg_goals.select("#goals-nodes").selectAll("text")
+    console.log(data[0].hash)
     // console.log(svg_goals.select("#goals-nodes").selectAll("text").node().getBoundingClientRect())
 }
 
@@ -258,4 +303,11 @@ function saveData() {
 
 function getHash() {
     return String(Number(String(Math.random()).split('.')[1]))
+}
+
+function getDataByHash(hash) {
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].hash == hash)
+            return data[i]
+    }
 }
