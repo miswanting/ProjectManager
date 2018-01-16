@@ -11,8 +11,17 @@ const url = require('url')
 // 保持一个对于 window 对象的全局引用，如果你不这样做，
 // 当 JavaScript 对象被垃圾回收， window 会被自动地关闭
 let win
-
-var dbData = JSON.parse(fs.readFileSync('db\\db.json', 'utf8'))
+var dbFile = fs.readFileSync('db\\db.json', 'utf8')
+var dbData = []
+if (dbFile == "") {
+    dbData.push({
+        "hash": getHash(),
+        "parentHash": "",
+        "name": "任务"
+    })
+} else {
+    dbData = JSON.parse(dbFile)
+}
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -83,3 +92,7 @@ app.on('activate', () => {
 
 // 在这文件，你可以续写应用剩下主进程代码。
 // 也可以拆分成几个文件，然后用 require 导入。
+
+function getHash() {
+    return String(Number(String(Math.random()).split('.')[1]))
+}

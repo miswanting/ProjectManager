@@ -9,6 +9,8 @@ var width = 800,
     height = 600
 svg_goals.attr("width", width)
 svg_goals.attr("height", height)
+
+// 抓取数据
 var data = ipcRenderer.sendSync('synchronous-message', JSON.stringify({
     'cmd': 'db'
 }))
@@ -37,11 +39,12 @@ btn_goals_add_show.on("click", function () {
     d3.select("#goals-name")._groups[0][0].value = ""
     stratify_goals = d3.stratify()
         .id(function (d) {
-            return d.name;
+            return d.hash;
         }).parentId(function (d) {
-            return d.parent;
+            return d.parentHash;
         })(data)
     var l_node = stratify_goals.descendants()
+    console.log(l_node)
     var l_id = []
     for (var i = 0; i < l_node.length; i++) {
         l_id.push(l_node[i].id)
@@ -58,14 +61,26 @@ btn_goals_add_show.on("click", function () {
         })
 })
 
+// 删除节点按钮
 btn_goals_remove.on("click", function () {
-    if (currentSelect == "") {
+    if (currentSelect == "") { // 排除空选择
         alert('请选择一项！')
     } else {
+        flag = false // 是否拥有子节点
         for (var i = 0; i < data.length; i++) {
-            if (data[i].name == currentSelect) {
-                data.splice(i, 1)
-                updateTree()
+            if (data[i].parent == currentSelect) {
+                flag = true
+            }
+        }
+        if (flag) {
+            alert("不能直接删除非空节点！")
+        } else {
+            for (var i = 0; i < data.length; i++) { // 修改data并更新
+                if (data[i].name == currentSelect) {
+                    data.splice(i, 1)
+                    updateTree()
+                    saveData()
+                }
             }
         }
     }
@@ -77,23 +92,29 @@ btn_goals_add.on("click", function () {
         d3.select("#goals-name")._groups[0][0].value = "[NONE]"
     }
     data.push({
-        "name": d3.select("#goals-name")._groups[0][0].value,
-        "parent": d3.select("#goals-parentlist")._groups[0][0].value
+        "hash": getHash(),
+        "parentHash": d3.select("#goals-parentlist")._groups[0][0].value,
+        "name": d3.select("#goals-name")._groups[0][0].value
     })
     updateTree()
-    ipcRenderer.sendSync('synchronous-message', JSON.stringify({
-        'cmd': 'save',
-        'data': data
-    }))
+    saveData()
 })
 
 // 全局智能刷新
 function updateTree() {
+    // 兼容性检查
+    for (var i = 0; i < data.length; i++) {
+        if (!data[i].hash) {
+            data[i].hash = getHash()
+            if (data[i].hash) {}
+        }
+    }
+    // 刷新数据
     stratify_goals = d3.stratify()
         .id(function (d) {
-            return d.name;
+            return d.hash;
         }).parentId(function (d) {
-            return d.parent;
+            return d.parentHash;
         })(data)
     // link = svg_goals.select("#goals-links")
     svg_goals.select("#goals-links")
@@ -150,6 +171,7 @@ function updateTree() {
             }
         })
         .on("click", function () {
+            updateTree()
             currentSelect = d3.select(this)._groups[0][0].__data__.id
             d3.select("#goals-detail")
                 .text(d3.select(this)._groups[0][0].__data__.id)
@@ -157,6 +179,7 @@ function updateTree() {
     svg_goals.select("#goals-nodes")
         .selectAll("text")
         .attr("x", function (d) {
+            // console.log(d.node())
             return -6
         })
         .attr("y", function (d) {
@@ -164,6 +187,19 @@ function updateTree() {
         })
         .data(stratify_goals.descendants())
         .text(function (d) {
-            return d.id.substring(d.id.lastIndexOf(".") + 1);
+            return d.data.name
         })
+    svg_goals.select("#goals-nodes").selectAll("text")
+    // console.log(svg_goals.select("#goals-nodes").selectAll("text").node().getBoundingClientRect())
+}
+
+function saveData() {
+    ipcRenderer.sendSync('synchronous-message', JSON.stringify({
+        'cmd': 'save',
+        'data': data
+    }))
+}
+
+function getHash() {
+    return String(Number(String(Math.random()).split('.')[1]))
 }
