@@ -5,6 +5,10 @@ var svg_goals = d3.select("#svg-goals") // SVG元素的引用
 var btn_goals_add_show = d3.select("#btn-goals-add-show") // 新增节点页面显示按钮
 var btn_goals_remove = d3.select("#btn-goals-remove") // 新增节点页面显示按钮
 var btn_goals_add = d3.select("#btn-goals-add") // 新增节点确认按钮
+
+var btn_goals_detail_refresh = d3.select("#btn-goals-detail-refresh") // 详细信息刷新数据按钮
+var btn_goals_detail_add = d3.select("#btn-goals-detail-add") // 详细信息新增子节点按钮
+var btn_goals_detail_remove = d3.select("#btn-goals-detail-remove") // 详细信息删除子节点按钮
 var width = 800,
     height = 600
 svg_goals.attr("width", width)
@@ -100,13 +104,31 @@ btn_goals_add.on("click", function () {
     saveData()
 })
 
+
+// var btn_goals_detail_refresh = d3.select("#btn-goals-detail-refresh") // 详细信息刷新数据按钮
+// 更新数据
+btn_goals_detail_refresh.on("click", function () {
+    for (var i = 0; i < data.length; i++) { // 更新
+        if ("@" + data[i].hash == d3.select("#goals-detail-hash").text()) {
+            data[i].name = d3.select("#goals-detail-name").node().value
+            data[i].description = d3.select("#goals-detail-description").node().value
+            data[i].parentHash = d3.select("#goals-detail-parentlist").node().value.split("@")[1]
+        }
+    }
+    updateTree()
+    saveData()
+})
+// var btn_goals_detail_add = d3.select("#btn-goals-detail-add") // 详细信息新增子节点按钮
+// var btn_goals_detail_remove = d3.select("#btn-goals-detail-remove") // 详细信息删除子节点按钮
+
+// ## 私有函数 ## //
+
 // 全局智能刷新
 function updateTree() {
     // 兼容性检查
     for (var i = 0; i < data.length; i++) {
-        if (!data[i].hash) {
-            data[i].hash = getHash()
-            if (data[i].hash) {}
+        if (!data[i].description) {
+            data[i].description = ""
         }
     }
     // 刷新数据
@@ -172,9 +194,43 @@ function updateTree() {
         })
         .on("click", function () {
             updateTree()
+            d3.select("#goals-detail-hash")
+                .text("@" + d3.select(this).node().__data__.data.hash)
+            d3.select("#goals-detail-name").node()
+                .value = d3.select(this).node().__data__.data.name
+            d3.select("#goals-detail-description").node()
+                .value = d3.select(this).node().__data__.data.description
+
+            // 详细页面父节点列表生成
+            stratify_goals = d3.stratify()
+                .id(function (d) {
+                    return d.hash;
+                }).parentId(function (d) {
+                    return d.parentHash;
+                })(data)
+            var l_node = stratify_goals.descendants()
+            var l_id = []
+            selectedIndex = 0
+            for (var i = 0; i < l_node.length; i++) {
+                if (l_node[i].data.hash == d3.select(this).node().__data__.data.parentHash) {
+                    selectedIndex = i
+                }
+                l_id.push(l_node[i].data.name + "@" + l_node[i].data.hash)
+            }
+            d3.select("#goals-detail-parentlist")
+                .selectAll("option")
+                .remove()
+            d3.select("#goals-detail-parentlist")
+                .selectAll("option")
+                .data(l_id)
+                .enter().append("option")
+                .text(function (d) {
+                    return d
+                })
+            d3.select("#goals-detail-parentlist").node().selectedIndex = selectedIndex
+            //
+
             currentSelect = d3.select(this)._groups[0][0].__data__.id
-            d3.select("#goals-detail")
-                .text(d3.select(this)._groups[0][0].__data__.id)
         })
     svg_goals.select("#goals-nodes")
         .selectAll("text")
