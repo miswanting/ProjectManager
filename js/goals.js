@@ -161,7 +161,36 @@ btn_goals_detail_add.on("click", function () {
     updateTree()
     saveData()
 })
-// var btn_goals_detail_remove = d3.select("#btn-goals-detail-remove") // 详细信息删除子节点按钮
+
+// 删除节点
+btn_goals_detail_remove.on("click", function () {
+    if (currentSelect == "") {
+        alert("请选择一项！")
+    } else {
+        flag = false // 是否拥有子节点
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].parentHash == currentSelect) {
+                flag = true
+            }
+        }
+        if (flag) {
+            alert("不能直接删除非空节点！")
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].hash == currentSelect) {
+                    data.splice(i, 1)
+                    currentSelect = ""
+                    d3.select("#goals-detail-hash").text("@")
+                    d3.select("#goals-detail-name").node().value = ""
+                    d3.select("#goals-detail-description").node().value = ""
+                    d3.select("#goals-detail-parentlist").selectAll("option").remove()
+                    updateTree()
+                    saveData()
+                }
+            }
+        }
+    }
+})
 
 // ## 私有函数 ## //
 
