@@ -107,6 +107,22 @@
                         </div>
                         <!-- 详情页面 -->
                         <div class="col-3" id="goals-detail">
+                            <form>
+                                <label for="goals-parentlist" class="col-form-label" id="goals-detail-hash">@</label>
+                                <input type="text" class="form-control" id="goals-detail-name" placeholder="目标名称">
+                                <textarea class="form-control" id="goals-detail-description" placeholder="描述"></textarea>
+                                <div class="form-group form-inline">
+                                    <label for="goals-parentlist" class="col-form-label">父节点：</label>
+                                    <select class="form-control" id="goals-detail-parentlist">
+                                        <option></option>
+                                    </select>
+                                </div>
+                                <div class="btn-group mr-2" role="group" aria-label="文字解释">
+                                    <button type="button" class="btn btn-primary" id="btn-goals-detail-refresh">更新</button>
+                                    <button type="button" class="btn btn-warning" id="btn-goals-detail-add">新增</button>
+                                    <button type="button" class="btn btn-danger" id="btn-goals-detail-remove">删除</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <!-- modal页面 -->
