@@ -15,6 +15,18 @@ svg_goals.attr("height", height)
 var data = ipcRenderer.sendSync('synchronous-message', JSON.stringify({
     'cmd': 'db'
 }))
+console.log(data)
+console.log(data.goals)
+if (!data.goals) {
+    data.goals = []
+    data.goals.push({
+        "hash": getHash(),
+        "parentHash": "",
+        "name": "任务根节点",
+        "description": ""
+    })
+}
+console.log(data)
 var currentSelect = ""
 var tree = d3.tree()
     .size([height - 100, width - 100]);
@@ -62,7 +74,7 @@ btn_goals_detail_add.on("click", function () {
         "name": "",
         "description": ""
     }
-    data.push(newNode)
+    data.goals.push(newNode)
     d3.select("#goals-detail-hash").text("@" + newNode.hash)
     d3.select("#goals-detail-name").node().value = newNode.name
     d3.select("#goals-detail-description").node().value = newNode.description
@@ -73,7 +85,7 @@ btn_goals_detail_add.on("click", function () {
             return d.hash;
         }).parentId(function (d) {
             return d.parentHash;
-        })(data)
+        })(data.goals)
     var l_node = stratify_goals.descendants()
     var l_id = []
     selectedIndex = 0
@@ -105,17 +117,17 @@ btn_goals_detail_remove.on("click", function () {
         alert("请选择一项！")
     } else {
         flag = false // 是否拥有子节点
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].parentHash == currentSelect) {
+        for (var i = 0; i < data.goals.length; i++) {
+            if (data.goals[i].parentHash == currentSelect) {
                 flag = true
             }
         }
         if (flag) {
             alert("不能直接删除非空节点！")
         } else {
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].hash == currentSelect) {
-                    data.splice(i, 1)
+            for (var i = 0; i < data.goals.length; i++) {
+                if (data.goals[i].hash == currentSelect) {
+                    data.goals.splice(i, 1)
                     currentSelect = ""
                     d3.select("#goals-detail-hash").text("@")
                     d3.select("#goals-detail-name").node().value = ""
@@ -133,21 +145,19 @@ btn_goals_detail_remove.on("click", function () {
 
 // 全局智能刷新
 function updateTree() {
-    console.log(data[0].hash)
     // 兼容性检查
     for (var i = 0; i < data.length; i++) {
-        if (!data[i].description) {
-            data[i].description = ""
+        if (!data.goals[i].description) {
+            data.goals[i].description = ""
         }
     }
     // 刷新数据
-    console.log(data)
     stratify_goals = d3.stratify()
         .id(function (d) {
             return d.hash;
         }).parentId(function (d) {
             return d.parentHash;
-        })(data)
+        })(data.goals)
     // link = svg_goals.select("#goals-links")
     svg_goals.select("#goals-links")
         .selectAll("path")
@@ -217,7 +227,7 @@ function updateTree() {
                     return d.hash;
                 }).parentId(function (d) {
                     return d.parentHash;
-                })(data)
+                })(data.goals)
             var l_node = stratify_goals.descendants()
             var l_id = []
             selectedIndex = 0
@@ -256,7 +266,6 @@ function updateTree() {
             return d.data.name
         })
     svg_goals.select("#goals-nodes").selectAll("text")
-    console.log(data[0].hash)
     // console.log(svg_goals.select("#goals-nodes").selectAll("text").node().getBoundingClientRect())
 }
 
@@ -272,8 +281,8 @@ function getHash() {
 }
 
 function getDataByHash(hash) {
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].hash == hash)
-            return data[i]
+    for (var i = 0; i < data.goals.length; i++) {
+        if (data.goals[i].hash == hash)
+            return data.goals[i]
     }
 }
