@@ -37,11 +37,17 @@ updateTree()
 
 // 更新数据
 btn_goals_detail_refresh.on("click", function () {
-    for (var i = 0; i < data.length; i++) { // 更新
-        if ("@" + data[i].hash == d3.select("#goals-detail-hash").text()) {
-            data[i].name = d3.select("#goals-detail-name").node().value
-            data[i].description = d3.select("#goals-detail-description").node().value
-            data[i].parentHash = d3.select("#goals-detail-parentlist").node().value.split("@")[1]
+    for (var i = 0; i < data.goals.length; i++) { // 更新
+        if ("@" + data.goals[i].hash == d3.select("#goals-detail-hash").text()) {
+            data.goals[i].name = d3.select("#goals-detail-name").node().value
+            data.goals[i].description = d3.select("#goals-detail-description").node().value
+            if (data.goals.length == 1) {
+                data.goals[i].parentHash = ""
+            } else if (d3.select("#goals-detail-parentlist").node().value.split("@")[1] == data.goals[i].hash) {
+                alert("父节点不能为自己！")
+            } else {
+                data.goals[i].parentHash = d3.select("#goals-detail-parentlist").node().value.split("@")[1]
+            }
         }
     }
     updateTree()
