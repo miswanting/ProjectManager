@@ -15,8 +15,6 @@ svg_goals.attr("height", height)
 var data = ipcRenderer.sendSync('synchronous-message', JSON.stringify({
     'cmd': 'db'
 }))
-console.log(data)
-console.log(data.goals)
 if (!data.goals) {
     data.goals = []
     data.goals.push({
@@ -26,7 +24,6 @@ if (!data.goals) {
         "description": ""
     })
 }
-console.log(data)
 var currentSelect = ""
 var tree = d3.tree()
     .size([height - 100, width - 100]);
@@ -158,7 +155,6 @@ function updateTree() {
         }).parentId(function (d) {
             return d.parentHash;
         })(data.goals)
-    // link = svg_goals.select("#goals-links")
     svg_goals.select("#goals-links")
         .selectAll("path")
         .remove()
