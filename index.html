@@ -79,7 +79,7 @@
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#profile" role="tab">个人档案</a>
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#goals" role="tab">目标规划</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#tech-tree" role="tab">科技树</a>
-                <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#projects" role="tab">项目管理</a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" href="#projects" role="tab">项目管理</a>
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#contacts" role="tab">联系人库</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#achievements" role="tab">成就系统</a>
                 <a class="list-group-item list-group-item-action rounded-0 disabled" data-toggle="list" href="#history" role="tab">历史纪录</a>
@@ -102,7 +102,7 @@
                         <!-- 详情页面 -->
                         <div class="col-3" id="goals-detail">
                             <form>
-                                <label for="goals-parentlist" class="col-form-label" id="goals-detail-hash">@</label>
+                                <label for="goals-parentlist" class="col-form-label ml-2" id="goals-detail-hash">@</label>
                                 <input type="text" class="form-control" id="goals-detail-name" placeholder="目标名称">
                                 <textarea class="form-control" id="goals-detail-description" placeholder="描述"></textarea>
                                 <div class="form-group form-inline">
@@ -111,12 +111,30 @@
                                         <option></option>
                                     </select>
                                 </div>
-                                <div class="btn-group mr-2" role="group" aria-label="文字解释">
+                                <div class="btn-group float-right mr-2" role="group" aria-label="文字解释">
                                     <button type="button" class="btn btn-primary" id="btn-goals-detail-refresh">更新</button>
-                                    <button type="button" class="btn btn-warning" id="btn-goals-detail-add">新增</button>
-                                    <button type="button" class="btn btn-danger" id="btn-goals-detail-remove">删除</button>
+                                    <button type="button" class="btn btn-primary" id="btn-goals-detail-add">新增</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#goals-modal">删除</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="goals-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">确认删除</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">您确定要删除该节点吗？</div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn btn-danger" id="btn-goals-detail-remove" data-dismiss="modal">删除</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <script src="js/goals.js"></script>
@@ -124,7 +142,78 @@
                 <!-- 科技树 -->
                 <div class="tab-pane" id="tech-tree" role="tabpanel">科技树</div>
                 <!-- 项目管理 -->
-                <div class="tab-pane" id="projects" role="tabpanel">项目管理</div>
+                <div class="tab-pane table-responsive" id="projects" role="tabpanel">
+                    <table class="table table-hover" id="projects-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">优先度</th>
+                                <th scope="col">项目名称</th>
+                                <th scope="col">当前进度</th>
+                                <th scope="col">当前任务</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>aaa</td>
+                                <td>1</td>
+                                <td>@1</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>bbb</td>
+                                <td>2</td>
+                                <td>@2</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td>ccc</td>
+                                <td>3</td>
+                                <td>@3</td>
+                            </tr>
+                            <tr data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                <th scope="row">3</th>
+                                <td>ccc</td>
+                                <td>3</td>
+                                <td>@3</td>
+                            </tr>
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica,
+                                    craft beer labore wes anderson cred nesciunt sapiente ea proident.
+                                </div>
+                            </div>
+                            <div id="accordion" role="tablist">
+                                <div class="card">
+                                    <tr class="card-header" role="tab button" id="headingOne" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+                                        aria-controls="collapseOne">
+                                        <th scope="row">3</th>
+                                        <td>ccc</td>
+                                        <td>3</td>
+                                        <td>@3</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute,
+                                                    non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
+                                                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
+                                                    single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh
+                                                    helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+                                                    Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table,
+                                                    raw denim aesthetic synth nesciunt you probably haven't heard of them
+                                                    accusamus labore sustainable VHS.
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </div>
+                            </div>
+                        </tbody>
+                    </table>
+                    <script src="js/projects.js"></script>
+                </div>
                 <!-- 联系人库 -->
                 <div class="tab-pane" id="contacts" role="tabpanel">
                     <p>
