@@ -40,6 +40,7 @@ if (!data.projects) {
             'status': 'todo'
         }]
     })
+    saveData()
 }
 // PTT.selectAll("tr").remove()
 createItem()
