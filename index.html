@@ -88,7 +88,72 @@
                 <div class="tab-pane active" id="overview" role="tabpanel">总览</div>
                 <!-- 个人档案 -->
                 <div class="tab-pane" id="profile" role="tabpanel">
-                    <canvas id="canvas-radar" class="chartjs" width="457" height="228" style="display: block; width: 457px; height: 228px;" data-vivaldi-spatnav-clickable="1"></canvas>
+                    <div class="row no-gutters">
+                        <div class="col-10">
+                            <h1 class="text-center m-4">个人档案</h1>
+                            <form>
+                                <div class="row m-4">
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">姓名</span>
+                                        </div>
+                                        <input type="text" class="form-control" value="何雨航">
+                                    </div>
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">性别</span>
+                                        </div>
+                                        <select class="form-control">
+                                            <option>男</option>
+                                            <option>女</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">出生日期</span>
+                                        </div>
+                                        <input type="text" class="form-control" id="birthday">
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#birthday').datetimepicker({
+                                                    locale: 'zh-cn',
+                                                    viewMode: 'years',
+                                                    format: 'YYYY/MM/DD'
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>
+                                <div class="row m-4">
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">姓名</span>
+                                        </div>
+                                        <input type="text" class="form-control" value="何雨航">
+                                    </div>
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">性别</span>
+                                        </div>
+                                        <select class="form-control">
+                                            <option>男</option>
+                                            <option>女</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group input-group-sm col-md-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">年龄</span>
+                                        </div>
+                                        <input type="text" class="form-control" value="18" readonly>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>
+                            </form>
+                        </div>
+                        <canvas id="canvas-radar" class="chartjs" width="457" height="228" style="display: block; width: 457px; height: 228px;" data-vivaldi-spatnav-clickable="1"></canvas>
+                    </div>
+                    <div class="col-2"></div>
                     <script src="js/overview.js"></script>
                 </div>
                 <!-- 目标规划 -->
