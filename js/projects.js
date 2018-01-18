@@ -8,11 +8,37 @@ if (!data.projects) {
     // test node generate
     data.projects.push({
         'hash': getHash(),
-        'name': 'test'
+        'name': 'test',
+        'missions': [{
+            'hash': getHash(),
+            'name': 'ed',
+            'status': 'done'
+        }, {
+            'hash': getHash(),
+            'name': 'ing',
+            'status': 'current'
+        }, {
+            'hash': getHash(),
+            'name': 'to',
+            'status': 'todo'
+        }]
     })
     data.projects.push({
         'hash': getHash(),
-        'name': 'test'
+        'name': 'test',
+        'missions': [{
+            'hash': getHash(),
+            'name': 'ed',
+            'status': 'done'
+        }, {
+            'hash': getHash(),
+            'name': 'ing',
+            'status': 'current'
+        }, {
+            'hash': getHash(),
+            'name': 'to',
+            'status': 'todo'
+        }]
     })
 }
 // PTT.selectAll("tr").remove()
@@ -53,6 +79,7 @@ function createItem() {
             .attr("type", "text")
             .attr("class", "form-control")
             .attr("readonly", true)
+            .node().value = data.projects[i].hash
         var name = headLine.append("div")
             .attr("class", "input-group input-group-sm col-md-7")
         name.append("div")
@@ -63,6 +90,7 @@ function createItem() {
         name.append("input")
             .attr("type", "text")
             .attr("class", "form-control")
+            .node().value = data.projects[i].name
         var priorityIndex = headLine.append("div")
             .attr("class", "input-group input-group-sm col-md-2")
         priorityIndex.append("div")
@@ -87,9 +115,22 @@ function createItem() {
             .attr("class", "row mb-3")
         var previousMissionList = panel.append("ul")
             .attr("class", "list-group col-md-3 p-3")
-        var currentMission = panel.append("div")
+        for (var j = data.projects[i].missions.length - 1; j >= 0; j--) {
+            if (data.projects[i].missions[j].status == 'done') {
+                previousMissionList.append("li")
+                    .attr("class", "list-group-item")
+                    .text(data.projects[i].missions[j].name)
+            }
+        }
+        var currentMissionPanel = panel.append("div")
             .attr("class", "col-md-6 p-3")
-        var missionChooser = currentMission.append("div")
+        var currentMission = {}
+        for (var j = 0; j < data.projects[i].missions.length; j++) {
+            if (data.projects[i].missions[j].status == 'current') {
+                currentMission = data.projects[i].missions[j]
+            }
+        }
+        var missionChooser = currentMissionPanel.append("div")
             .attr("class", "input-group input-group-sm mb-3")
         missionChooser.append("button")
             .attr("class", "btn btn-sm")
@@ -103,11 +144,12 @@ function createItem() {
         missionChooser.append("input")
             .attr("class", "form-control")
             .attr("type", "text")
+            .node().value = currentMission.name
         missionChooser.append("button")
             .attr("class", "btn btn-sm")
             .attr("type", "button")
             .text("→")
-        var dateTimeChooser = currentMission.append("div")
+        var dateTimeChooser = currentMissionPanel.append("div")
             .attr("class", "container")
             .append("div")
             .attr("class", "row")
@@ -125,18 +167,31 @@ function createItem() {
         $("#datetimepicker-" + data.projects[i].hash).datetimepicker({
             locale: 'zh-cn'
         })
-        var description = currentMission.append("div")
+        var description = currentMissionPanel.append("div")
             .attr("class", "form-group")
         description.append("label")
             .text("任务描述")
         description.append("textarea")
             .attr("class", "form-control")
             .attr("rows", "2")
-        currentMission.append("button")
+        currentMissionPanel.append("button")
             .attr("class", "btn btn-primary btn-sm btn-block")
             .attr("type", "button")
             .text("已完成")
         var futureMissionList = panel.append("ul")
             .attr("class", "list-group col-md-3 p-3")
+        for (var j = 0; j < data.projects[i].missions.length; j++) {
+            if (data.projects[i].missions[j].status == 'todo') {
+                futureMissionList.append("li")
+                    .attr("class", "list-group-item")
+                    .text(data.projects[i].missions[j].name)
+            }
+        }
+        futureMissionList.append("li")
+            .attr("class", "list-group-item d-flex justify-content-center")
+            .append("button")
+            .attr("class", "btn btn-sm")
+            .attr("type", "button")
+            .text("+")
     }
 }
