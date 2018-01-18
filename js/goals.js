@@ -23,6 +23,7 @@ if (!data.goals) {
         "name": "任务根节点",
         "description": ""
     })
+    saveData()
 }
 var currentSelect = ""
 var tree = d3.tree()
@@ -47,12 +48,12 @@ updateTree()
 // 更新数据
 btn_goals_detail_refresh.on("click", function () {
     for (var i = 0; i < data.goals.length; i++) { // 更新
-        if ("@" + data.goals[i].hash == d3.select("#goals-detail-hash").text()) {
+        if (data.goals[i].hash == d3.select("#goals-detail-hash").node().value) {
             data.goals[i].name = d3.select("#goals-detail-name").node().value
             data.goals[i].description = d3.select("#goals-detail-description").node().value
             if (data.goals.length == 1) {
                 data.goals[i].parentHash = ""
-            } else if (d3.select("#goals-detail-parentlist").node().value.split("@")[1] == data.goals[i].hash) {
+            } else if (d3.select("#goals-detail-parentlist").node().value == data.goals[i].hash) {
                 alert("父节点不能为自己！")
             } else {
                 data.goals[i].parentHash = d3.select("#goals-detail-parentlist").node().value.split("@")[1]
@@ -67,12 +68,12 @@ btn_goals_detail_refresh.on("click", function () {
 btn_goals_detail_add.on("click", function () {
     var newNode = {
         "hash": getHash(),
-        "parentHash": d3.select("#goals-detail-hash").text().split("@")[1],
+        "parentHash": d3.select("#goals-detail-hash").node().value,
         "name": "",
         "description": ""
     }
     data.goals.push(newNode)
-    d3.select("#goals-detail-hash").text("@" + newNode.hash)
+    d3.select("#goals-detail-hash").node().value = newNode.hash
     d3.select("#goals-detail-name").node().value = newNode.name
     d3.select("#goals-detail-description").node().value = newNode.description
     currentSelect = newNode.hash
@@ -126,7 +127,7 @@ btn_goals_detail_remove.on("click", function () {
                 if (data.goals[i].hash == currentSelect) {
                     data.goals.splice(i, 1)
                     currentSelect = ""
-                    d3.select("#goals-detail-hash").text("@")
+                    d3.select("#goals-detail-hash").node().value = ""
                     d3.select("#goals-detail-name").node().value = ""
                     d3.select("#goals-detail-description").node().value = ""
                     d3.select("#goals-detail-parentlist").selectAll("option").remove()
@@ -210,12 +211,10 @@ function updateTree() {
         })
         .on("click", function () {
             updateTree()
-            d3.select("#goals-detail-hash")
-                .text("@" + d3.select(this).node().__data__.data.hash)
-            d3.select("#goals-detail-name").node()
-                .value = d3.select(this).node().__data__.data.name
-            d3.select("#goals-detail-description").node()
-                .value = d3.select(this).node().__data__.data.description
+
+            d3.select("#goals-detail-hash").node().value = d3.select(this).node().__data__.data.hash
+            d3.select("#goals-detail-name").node().value = d3.select(this).node().__data__.data.name
+            d3.select("#goals-detail-description").node().value = d3.select(this).node().__data__.data.description
 
             // 详细页面父节点列表生成
             stratify_goals = d3.stratify()

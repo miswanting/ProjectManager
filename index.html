@@ -165,17 +165,29 @@
                         </div>
                         <!-- 详情页面 -->
                         <div class="col-3" id="goals-detail">
-                            <form>
-                                <label for="goals-parentlist" class="col-form-label ml-2" id="goals-detail-hash">@</label>
-                                <input type="text" class="form-control" id="goals-detail-name" placeholder="目标名称">
+                            <form class="my-4">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="goals-detail-hash">
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">名称</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="goals-detail-name">
+                                </div>
                                 <textarea class="form-control" id="goals-detail-description" placeholder="描述"></textarea>
-                                <div class="form-group form-inline">
-                                    <label for="goals-detail-parentlist" class="col-form-label">父节点：</label>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">名称</span>
+                                    </div>
                                     <select class="form-control" id="goals-detail-parentlist">
                                         <option></option>
                                     </select>
                                 </div>
-                                <div class="btn-group float-right mr-2" role="group" aria-label="文字解释">
+                                <div class="btn-group float-right my-4" role="group" aria-label="文字解释">
                                     <button type="button" class="btn btn-primary" id="btn-goals-detail-refresh">更新</button>
                                     <button type="button" class="btn btn-primary" id="btn-goals-detail-add">新增</button>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#goals-modal">删除</button>
