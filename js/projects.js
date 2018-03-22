@@ -12,15 +12,18 @@ if (!data.projects) {
         'missions': [{
             'hash': getHash(),
             'name': 'ed',
-            'status': 'done'
+            'status': 'done',
+            'description': 'des'
         }, {
             'hash': getHash(),
             'name': 'ing',
-            'status': 'current'
+            'status': 'current',
+            'description': 'des'
         }, {
             'hash': getHash(),
             'name': 'to',
-            'status': 'todo'
+            'status': 'todo',
+            'description': 'des'
         }]
     })
     data.projects.push({
@@ -29,15 +32,18 @@ if (!data.projects) {
         'missions': [{
             'hash': getHash(),
             'name': 'ed',
-            'status': 'done'
+            'status': 'done',
+            'description': 'des'
         }, {
             'hash': getHash(),
             'name': 'ing',
-            'status': 'current'
+            'status': 'current',
+            'description': 'des'
         }, {
             'hash': getHash(),
             'name': 'to',
-            'status': 'todo'
+            'status': 'todo',
+            'description': 'des'
         }]
     })
     saveData()
@@ -45,8 +51,8 @@ if (!data.projects) {
 // PTT.selectAll("tr").remove()
 createItem()
 
-function createItem() {
-    for (var i = 0; i < data.projects.length; i++) {
+function createItem() { // 表格全局刷新
+    for (var i = 0; i < data.projects.length; i++) { // 每一个项目
         var tr = PTT.append("tr")
             .attr("id", "headingOne")
             .attr("role", "tab button")
@@ -67,8 +73,10 @@ function createItem() {
             .attr("role", "tabpanel")
             .attr("aria-labelledby", "headingOne")
             .append("form")
+        // 头条
         var headLine = form.append("div")
             .attr("class", "row mb-3")
+        // Hash
         var hash = headLine.append("div")
             .attr("class", "input-group input-group-sm col-md-3")
         hash.append("div")
@@ -81,6 +89,7 @@ function createItem() {
             .attr("class", "form-control")
             .attr("readonly", true)
             .node().value = data.projects[i].hash
+        // 项目名称
         var name = headLine.append("div")
             .attr("class", "input-group input-group-sm col-md-7")
         name.append("div")
@@ -92,6 +101,7 @@ function createItem() {
             .attr("type", "text")
             .attr("class", "form-control")
             .node().value = data.projects[i].name
+        // 优先指数
         var priorityIndex = headLine.append("div")
             .attr("class", "input-group input-group-sm col-md-2")
         priorityIndex.append("div")
@@ -103,6 +113,7 @@ function createItem() {
             .attr("type", "text")
             .attr("class", "form-control")
             .attr("readonly", true)
+        // 进度条
         form.append("div")
             .attr("class", "progress mb-3")
             .append("div")
@@ -112,8 +123,10 @@ function createItem() {
             .attr("aria-valuenow", "50")
             .attr("aria-valuemin", "0")
             .attr("aria-valuemax", "100")
+        // 进度条下
         var panel = form.append("div")
             .attr("class", "row mb-3")
+        // 左侧已完成
         var previousMissionList = panel.append("ul")
             .attr("class", "list-group col-md-3 p-3")
         for (var j = data.projects[i].missions.length - 1; j >= 0; j--) {
@@ -123,20 +136,24 @@ function createItem() {
                     .text(data.projects[i].missions[j].name)
             }
         }
+        // 中间面板
         var currentMissionPanel = panel.append("div")
             .attr("class", "col-md-6 p-3")
-        var currentMission = {}
+        var currentMission = {} // 提出当前任务
         for (var j = 0; j < data.projects[i].missions.length; j++) {
             if (data.projects[i].missions[j].status == 'current') {
                 currentMission = data.projects[i].missions[j]
             }
         }
+        // 任务选择器
         var missionChooser = currentMissionPanel.append("div")
             .attr("class", "input-group input-group-sm mb-3")
+        // 选择上一个任务
         missionChooser.append("button")
             .attr("class", "btn btn-sm")
             .attr("type", "button")
             .text("←")
+        // 当前任务
         missionChooser.append("div")
             .attr("class", "input-group-prepend")
             .append("span")
@@ -146,10 +163,12 @@ function createItem() {
             .attr("class", "form-control")
             .attr("type", "text")
             .node().value = currentMission.name
+        // 选择下一个任务
         missionChooser.append("button")
             .attr("class", "btn btn-sm")
             .attr("type", "button")
             .text("→")
+        // 日期时间
         var dateTimeChooser = currentMissionPanel.append("div")
             .attr("class", "container")
             .append("div")
@@ -168,6 +187,7 @@ function createItem() {
         $("#datetimepicker-" + data.projects[i].hash).datetimepicker({
             locale: 'zh-cn'
         })
+        // 任务描述
         var description = currentMissionPanel.append("div")
             .attr("class", "form-group")
         description.append("label")
@@ -175,10 +195,13 @@ function createItem() {
         description.append("textarea")
             .attr("class", "form-control")
             .attr("rows", "2")
+            .node().value = currentMission.description
+        // 完成按钮
         currentMissionPanel.append("button")
             .attr("class", "btn btn-primary btn-sm btn-block")
             .attr("type", "button")
             .text("已完成")
+        // 右侧未完成
         var futureMissionList = panel.append("ul")
             .attr("class", "list-group col-md-3 p-3")
         for (var j = 0; j < data.projects[i].missions.length; j++) {
