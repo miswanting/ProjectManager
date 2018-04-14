@@ -5,9 +5,9 @@
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>ProjectManager</title>
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" />
+    <!-- <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" /> -->
+    <link rel="stylesheet" href="css/flatpickr.min.css">
 
     <!-- 在所有脚本之前插入该行  -->
     <script>
@@ -22,9 +22,17 @@
     <script src="http://momentjs.com/downloads/moment-with-locales.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.js"></script>
+    <script src="js/flatpickr.min.js"></script>
+    <script src="js/zh.js"></script>
+    <script src="js/vue-flatpickr.min.js"></script>
     <script src="js/d3.min.js"></script>
     <script src="js/Chart.min.js"></script>
-    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <!-- <script src="js/bootstrap-datetimepicker.min.js"></script> -->
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/vue.js"></script>
+    <!-- <script src="js/picker.min.js"></script> -->
+    <!-- <script src="js/bootstrap-datetimepicker.min.js"></script> -->
+    <!-- <script src="http://localhost:8098"></script> -->
 
     <!-- 在所有脚本之后插入该行 -->
     <script>
@@ -97,7 +105,8 @@
                 <a class="list-group-item list-group-item-action" data-toggle="list" href="#contacts" role="tab">联系人库</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#achievements" role="tab">成就系统</a>
                 <a class="list-group-item list-group-item-action disabled" data-toggle="list" href="#history" role="tab">历史纪录</a>
-                <a class="list-group-item list-group-item-action rounded-0" data-toggle="list" href="#X" role="tab">X</a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" href="#X" role="tab">X</a>
+                <a class="list-group-item list-group-item-action rounded-0" data-toggle="list" href="#test" role="tab">Test Vue</a>
             </div>
             <div class="col-11 tab-content">
                 <!-- 总览 -->
@@ -129,7 +138,7 @@
                                             <span class="input-group-text">出生日期</span>
                                         </div>
                                         <input type="text" class="form-control" id="birthday">
-                                        <script type="text/javascript">
+                                        <!-- <script type="text/javascript">
                                             $(function () {
                                                 $('#birthday').datetimepicker({
                                                     locale: 'zh-cn',
@@ -137,7 +146,7 @@
                                                     format: 'YYYY/MM/DD'
                                                 });
                                             });
-                                        </script>
+                                        </script> -->
                                     </div>
                                     <div class="col-md-3"></div>
                                 </div>
@@ -305,13 +314,13 @@
                                                                             <span class="input-group-text">日期时间</span>
                                                                         </div>
                                                                         <input type="text" class="form-control" id="datetimepicker">
-                                                                        <script type="text/javascript">
+                                                                        <!-- <script type="text/javascript">
                                                                             $(function () {
                                                                                 $('#datetimepicker').datetimepicker({
                                                                                     locale: 'zh-cn'
                                                                                 });
                                                                             });
-                                                                        </script>
+                                                                        </script> -->
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -358,13 +367,142 @@
                 <!-- X -->
                 <div class="tab-pane" id="X" role="tabpanel">
                     X
-
                 </div>
                 <script src="js/X.js"></script>
+                <!-- Test Vue -->
+                <div class="tab-pane" id="test" role="tabpanel" onload="adjust()">
+                    <div id="gantt" class="d-flex flex-column">
+                        <div id="nav" class="border">
+                            导航
+                        </div>
+                        <div id="tools" class="border">
+                            工具
+                        </div>
+                        <div id="heads" class="container-fluid row m-0 p-0">
+                            <div id="left-head" class="col-3 p-0" style="height:78px">
+                                <div id="leftTableHead" class="d-flex">
+                                    <div id="text_projName" class="border" style="width:100%">
+                                        Name
+                                    </div>
+                                    <div id="text_projTotalProgress" class="border">
+                                        Progress
+                                    </div>
+                                </div>
+                                <div id="projInfo" class="d-flex justify-content-end align-items-stretch">
+                                    <div id="text_projName" class="border" style="width:100%">
+                                        Name
+                                    </div>
+                                    <div id="text_projTotalProgress" class="border">
+                                        Progress
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="right-head" class="col-9 p-0 d-flex">
+                                <div v-for="month in months" class="d-flex flex-column">
+                                    <div class="text-center border">
+                                        {{month.text}}
+                                    </div>
+                                    <div class="d-flex">
+                                        <div v-for="day in month.days" class="text-center border" style="width:20px;height:52px">
+                                            {{day.text}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bodys" class="container-fluid row m-0 p-0">
+                            <div id="left-panel" class="col-3 p-0">
+                                <div id="leftVP">
+                                    <div id="taskBoard">
+                                        <div v-for="task in tasks" class="border">
+                                            {{task.name}}
+                                        </div>
+                                        <button id="add-task-btn" type="button" class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#add-task-modal">新增</button>
+                                        <div class="modal fade" id="add-task-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalCenterTitle">新增任务</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div id="picker" class="modal-body">
+                                                        <form>
+                                                            <div class="form-group">
+                                                                <label for="exampleInputEmail1">任务名称</label>
+                                                                <input v-model="newTask.name" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="输入名称">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="point" v-model="newTask.type">
+                                                                    <label class="form-check-label" for="inlineRadio1">时间点</label>
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="line" v-model="newTask.type">
+                                                                    <label class="form-check-label" for="inlineRadio2">时间段</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div>
+                                                                    <label for="exampleInputEmail1" v-if="newTask.type != 'line'">设置时间</label>
+                                                                    <label for="exampleInputEmail1" v-if="newTask.type == 'line'">设置开始时间</label>
+                                                                    <input id="start-time"data-id="rangePlugin" v-model="newTask.start" class="flatpickr flatpickr-input" type="text" placeholder="选择时间" readonly="readonly" tabindex="-1">
+                                                                </div>
+                                                                <div v-if="newTask.type == 'line'">
+                                                                    <label for="exampleInputEmail1">设置结束时间</label>
+                                                                    <input id="end-time" v-model="newTask.end" class="flatpickr flatpickr-input" type="text" placeholder="选择时间" readonly="readonly" tabindex="-1">
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                                        <button id="add-task" type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="doScroll()">
+                                <div id="rightVP" style="overflow-wrap:scroll">
+                                    <div id="ganttBoard">
+                                        <div id="bLayer" class="d-flex">
+                                            <div v-for="month in months" class="d-flex">
+                                                <div v-for="day in month.days" class="text-center border" style="width:20px" v-bind:style="{height:taskBoardHeight+'px'}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="fLayer" class="position-absolute" style="top:0">
+                                            <div class="d-flex align-items-center" v-for="task in tasks" style="height:26px">
+                                                <div class="progress" style="width: 200px">
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <script src="js/test.js"></script>
         </div>
     </div>
+    </div>
     <script>
+        document.documentElement.style.overflow = 'hidden'
+        addEventListener('DOMContentLoaded', () => {
+            var mylist = document.getElementById('myList')
+            mylist.style.height = mylist.parent.style.height
+            console.log(mylist);
+        })
+
+
         const remote = require('electron').remote;
 
         function ExitProgrom() {
@@ -375,6 +513,10 @@
         // document.getElementById("minimize").addEventListener("click", ExitProgrom);
         // document.getElementById("maximize").addEventListener("click", ExitProgrom);
         document.getElementById("exit").addEventListener("click", ExitProgrom);
+        document.getElementsByTagName('body')[0].height = window.innerHeight
+        document.getElementById('myList').clientHeight = window.innerHeight - document.getElementsByClassName('navbar')[
+            0].clientHeight
+        window.innerHeight - document.getElementsByClassName('navbar')[0].clientHeight
     </script>
 </body>
 
