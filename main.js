@@ -51,6 +51,7 @@ function createWindow() {
 
     // 打开开发者工具。
     win.webContents.openDevTools()
+    BrowserWindow.addDevToolsExtension('C:\\Users\\HYH\\AppData\\Local\\Google\\Chrome SxS\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\4.1.4_0')
 
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
