@@ -52,6 +52,9 @@ function createWindow() {
     // 打开开发者工具。
     win.webContents.openDevTools()
     BrowserWindow.addDevToolsExtension('C:\\Users\\HYH\\AppData\\Local\\Google\\Chrome SxS\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\4.1.4_0')
+    BrowserWindow.addDevToolsExtension('devtron')
+    // require('devtron').install()
+
 
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
@@ -62,15 +65,17 @@ function createWindow() {
     })
 
     // 提供数据库数据
-    ipcMain.on('synchronous-message', (event, arg) => {
-        var pkg = JSON.parse(arg)
-        if (pkg.cmd == 'db') {
-            event.returnValue = dbData
-        } else if (pkg.cmd == 'save') {
-            dbData = pkg.data
-            fs.writeFileSync('db\\db.json', JSON.stringify(dbData))
-            event.returnValue = true
+    ipcMain.on('save', (event, arg) => {
+        fs.writeFileSync('db/db.json', JSON.stringify(arg))
+        event.returnValue = true
+    })
+    ipcMain.on('load', (event, arg) => {
+        if (fs.existsSync('db/db.json')) {
+            var rawData = fs.readFileSync('db/db.json')
+        } else {
+            var rawData = {}
         }
+        event.returnValue = JSON.parse(rawData)
     })
 }
 

@@ -43,6 +43,21 @@
 </head>
 
 <body>
+    <script>
+        const {
+            ipcRenderer
+        } = require('electron')
+
+        var data = {}
+
+        function load() {
+            data = ipcRenderer.sendSync('load')
+        }
+
+        function save() {
+            ipcRenderer.sendSync('save', data)
+        }
+    </script>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#" style="-webkit-app-region: drag">工程管理器</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -137,15 +152,6 @@
                                             <span class="input-group-text">出生日期</span>
                                         </div>
                                         <input type="text" class="form-control" id="birthday">
-                                        <!-- <script type="text/javascript">
-                                            $(function () {
-                                                $('#birthday').datetimepicker({
-                                                    locale: 'zh-cn',
-                                                    viewMode: 'years',
-                                                    format: 'YYYY/MM/DD'
-                                                });
-                                            });
-                                        </script> -->
                                     </div>
                                     <div class="col-md-3"></div>
                                 </div>
@@ -247,8 +253,56 @@
                         <div id="nav" class="border">
                             导航
                         </div>
-                        <div id="tools" class="border">
-                            工具
+                        <div id="tools" class="border d-flex">
+                            <div class="btn-group" role="group" aria-label="Tools">
+                                <button id="add-task-btn" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-task-modal">新增</button>
+                            </div>
+                            <div class="modal fade" id="add-task-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalCenterTitle">新增任务</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div id="picker" class="modal-body">
+                                            <form>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">任务名称</label>
+                                                    <input v-model="newTask.name" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="输入名称">
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="point" v-model="newTask.type">
+                                                        <label class="form-check-label" for="inlineRadio1">时间点</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="line" v-model="newTask.type">
+                                                        <label class="form-check-label" for="inlineRadio2">时间段</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div>
+                                                        <label for="exampleInputEmail1" v-show="newTask.type != 'line'">设置时间</label>
+                                                        <label for="exampleInputEmail1" v-show="newTask.type == 'line'">设置开始时间</label>
+                                                        <input id="start-time" data-id="rangePlugin" v-model="newTask.start" class="flatpickr flatpickr-input" type="text" placeholder="选择时间"
+                                                            readonly="readonly" tabindex="-1">
+                                                    </div>
+                                                    <div v-show="newTask.type == 'line'">
+                                                        <label for="exampleInputEmail1">设置结束时间</label>
+                                                        <input id="end-time" v-model="newTask.end" type="text" placeholder="选择时间" readonly="readonly" tabindex="-1">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                            <button id="add-task" type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div id="heads" class="container-fluid row m-0 p-0">
                             <div id="left-head" class="col-3 p-0" style="height:78px">
@@ -270,7 +324,7 @@
                                 </div>
                             </div>
                             <div id="right-head" class="col-9 p-0 d-flex">
-                                <div id="right-head-scroll" class="d-flex" style="overflow: hidden">
+                                <div id="right-head-scroll" class="d-flex" style="overflow: hidden;width:100px" v-bind:style="{width:rightHeadWidth+'px'}">
                                     <div v-for="month in months" class="d-flex flex-column">
                                         <div class="text-center border">
                                             {{month.text}}
@@ -285,68 +339,23 @@
                             </div>
                         </div>
                         <div id="bodys" class="container-fluid row m-0 p-0">
-                            <div id="left-panel" class="col-3 p-0"style="overflow-y: hidden">
+                            <div id="left-panel" class="col-3 p-0" style="overflow-y: hidden">
                                 <div id="leftVP">
-                                    <div id="taskBoard" >
-                                        <div v-for="task in tasks" class="border">
-                                            {{task.name}}
+                                    <div id="taskBoard">
+                                        <div v-for="task in tasks" class="d-flex border m-0">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                            <div>{{task.name}}</div>
                                         </div>
-                                        <button id="add-task-btn" type="button" class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#add-task-modal">新增</button>
-                                        <div class="modal fade" id="add-task-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalCenterTitle">新增任务</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div id="picker" class="modal-body">
-                                                        <form>
-                                                            <div class="form-group">
-                                                                <label for="exampleInputEmail1">任务名称</label>
-                                                                <input v-model="newTask.name" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="输入名称">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="point" v-model="newTask.type">
-                                                                    <label class="form-check-label" for="inlineRadio1">时间点</label>
-                                                                </div>
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="line" v-model="newTask.type">
-                                                                    <label class="form-check-label" for="inlineRadio2">时间段</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <div>
-                                                                    <label for="exampleInputEmail1" v-show="newTask.type != 'line'">设置时间</label>
-                                                                    <label for="exampleInputEmail1" v-show="newTask.type == 'line'">设置开始时间</label>
-                                                                    <input id="start-time" data-id="rangePlugin" v-model="newTask.start" class="flatpickr flatpickr-input" type="text" placeholder="选择时间"
-                                                                        readonly="readonly" tabindex="-1">
-                                                                </div>
-                                                                <div v-show="newTask.type == 'line'">
-                                                                    <label for="exampleInputEmail1">设置结束时间</label>
-                                                                    <input id="end-time" v-model="newTask.end" type="text" placeholder="选择时间" readonly="readonly" tabindex="-1">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                                                        <button id="add-task" type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
-                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="document.getElementById('right-head-scroll').scrollLeft = this.scrollLeft;document.getElementById('left-panel').scrollTop = this.scrollTop;">
-                                <div id="rightVP" style="overflow-wrap:scroll">
-                                    <div id="ganttBoard">
+                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="document.getElementById('right-head-scroll').scrollLeft = this.scrollLeft;document.getElementById('left-panel').scrollTop = this.scrollTop;data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth">
+                                <div id="rightVP" height="100%">
+                                    <div id="ganttBoard" height="100%">
                                         <div id="bLayer" class="d-flex">
                                             <div v-for="month in months" class="d-flex">
-                                                <div v-for="day in month.days" class="text-center border" style="width:20px" v-bind:style="{height:taskBoardHeight+'px'}">
+                                                <div v-for="day in month.days" class="text-center border" style="width:20px" v-bind:style="{height:ganttTimeTableHeight+'px'}">
                                                 </div>
                                             </div>
                                         </div>
@@ -364,7 +373,7 @@
                         </div>
                     </div>
                 </div>
-                <script src="js/test.js"></script>
+                <script src="js/projects.js"></script>
                 <!-- 联系人库 -->
                 <div class="tab-pane" id="contacts" role="tabpanel">
                     <p>
