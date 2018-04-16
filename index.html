@@ -48,7 +48,12 @@
             ipcRenderer
         } = require('electron')
 
+
         var data = {}
+
+        function getHash() {
+            return String(Number(String(Math.random()).split('.')[1]))
+        }
 
         function load() {
             data = ipcRenderer.sendSync('load')
@@ -344,13 +349,14 @@
                                     <div id="taskBoard">
                                         <div v-for="task in tasks" class="d-flex border m-0">
                                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                            <div v-on:mouseover="mouseOver(task.name)">{{task.name}}</div>
                                             <div>{{task.name}}</div>
                                         </div>
 
                                     </div>
                                 </div>
                             </div>
-                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="document.getElementById('right-head-scroll').scrollLeft = this.scrollLeft;document.getElementById('left-panel').scrollTop = this.scrollTop;data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth">
+                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="doScroll()Z">
                                 <div id="rightVP" height="100%">
                                     <div id="ganttBoard" height="100%">
                                         <div id="bLayer" class="d-flex">

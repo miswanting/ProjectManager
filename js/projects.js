@@ -31,6 +31,8 @@ if (data.projects) {} else {
             //
             left: 0,
             width: 20,
+            hash: 20,
+            showLittleTool: false
         }
     }
 }
@@ -43,6 +45,11 @@ var gantt = new Vue({
     computed: {
         rightHeadWidth: function () {
             return document.getElementById('right-panel').clientWidth - document.getElementById('right-panel').scrollWidth
+        }
+    },
+    methods: {
+        mouseOver: function (name) {
+            console.log(name);
         }
     }
 
@@ -71,14 +78,6 @@ function adjust() {
     document.getElementById('right-panel').style.height = document.getElementById('gantt').clientHeight - document.getElementById('right-panel').offsetTop + 'px'
     data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth - document.getElementById('right-panel').scrollWidth
 }
-
-function text2time(text) {
-
-}
-
-function time2text(time) {
-
-}
 document.getElementById('add-task').addEventListener('click', () => {
     var newTask = JSON.parse(JSON.stringify(gantt.newTask))
     newTask.start = moment(newTask.start)
@@ -93,6 +92,7 @@ document.getElementById('add-task').addEventListener('click', () => {
     newTask.left = duration.asDays() * 20
     console.log(gantt, newTask, duration, duration.asDays(), newTask.left);
     newTask.name = (newTask.name == '') ? 'None' : newTask.name
+    newTask.hash = getHash()
     gantt.tasks.push(newTask)
     save()
     gantt.taskBoardHeight = document.getElementById('bodys').clientHeight + 26
@@ -105,6 +105,9 @@ document.getElementById('projects').addEventListener('click', () => {
 })
 
 function doScroll() {
+    // data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
+    document.getElementById('right-head-scroll').scrollLeft = this.scrollLeft;
+    document.getElementById('left-panel').scrollTop = this.scrollTop;
     data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
 }
 document.getElementById('add-task-btn').addEventListener('click', () => {
