@@ -5,7 +5,7 @@
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>ProjectManager</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" /> -->
     <link rel="stylesheet" href="css/flatpickr.min.css">
 
@@ -18,10 +18,10 @@
     </script>
     <!--  -->
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="http://momentjs.com/downloads/moment-with-locales.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.js"></script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/flatpickr.min.js"></script>
     <script src="js/zh.js"></script>
     <script src="js/rangePlugin.js"></script>
@@ -279,22 +279,22 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="point" v-model="newTask.type">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="milestone" v-model="newTask.type">
                                                         <label class="form-check-label" for="inlineRadio1">时间点</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="line" v-model="newTask.type">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="normal" v-model="newTask.type">
                                                         <label class="form-check-label" for="inlineRadio2">时间段</label>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <div>
-                                                        <label for="exampleInputEmail1" v-show="newTask.type != 'line'">设置时间</label>
-                                                        <label for="exampleInputEmail1" v-show="newTask.type == 'line'">设置开始时间</label>
+                                                        <label for="exampleInputEmail1" v-show="newTask.type != 'normal'">设置时间</label>
+                                                        <label for="exampleInputEmail1" v-show="newTask.type == 'normal'">设置开始时间</label>
                                                         <input id="start-time" data-id="rangePlugin" v-model="newTask.start" class="flatpickr flatpickr-input" type="text" placeholder="选择时间"
                                                             readonly="readonly" tabindex="-1">
                                                     </div>
-                                                    <div v-show="newTask.type == 'line'">
+                                                    <div v-show="newTask.type == 'normal'">
                                                         <label for="exampleInputEmail1">设置结束时间</label>
                                                         <input id="end-time" v-model="newTask.end" type="text" placeholder="选择时间" readonly="readonly" tabindex="-1">
                                                     </div>
@@ -311,20 +311,20 @@
                         </div>
                         <div id="heads" class="container-fluid row m-0 p-0">
                             <div id="left-head" class="col-3 p-0" style="height:78px">
-                                <div id="leftTableHead" class="d-flex">
-                                    <div id="text_projName" class="border" style="width:100%">
-                                        Name
+                                <div id="leftTableHead" class="d-flex justify-content-between">
+                                    <div id="text_projName" class="border" style="height:52px;width:70%">
+                                        任务名称
                                     </div>
-                                    <div id="text_projTotalProgress" class="border">
-                                        Progress
+                                    <div id="text_projTotalProgress" class="border text-center" style="width:30%">
+                                        进度
                                     </div>
                                 </div>
-                                <div id="projInfo" class="d-flex justify-content-end align-items-stretch">
-                                    <div id="text_projName" class="border" style="width:100%">
-                                        Name
+                                <div id="projInfo" class="d-flex justify-content-between align-items-stretch">
+                                    <div id="text_projName" class="border" style="width:70%">
+                                        测试
                                     </div>
-                                    <div id="text_projTotalProgress" class="border">
-                                        Progress
+                                    <div id="text_projTotalProgress" class="border text-center" style="width:30%">
+                                        0%
                                     </div>
                                 </div>
                             </div>
@@ -347,16 +347,30 @@
                             <div id="left-panel" class="col-3 p-0" style="overflow-y: hidden">
                                 <div id="leftVP">
                                     <div id="taskBoard">
-                                        <div v-for="task in tasks" class="d-flex border m-0">
-                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                            <div v-on:mouseover="mouseOver(task.name)">{{task.name}}</div>
-                                            <div>{{task.name}}</div>
+                                        <div v-for="task in tasks" class="d-flex" v-on:mouseover="mouseOver(task.hash)" v-on:mouseleave="mouseLeave(task.hash)">
+                                            <div style="width:70%" class="d-flex border align-items-center justify-content-between">
+                                                <div class="text-truncate">{{task.name}}</div>
+                                                <div v-show="task.showTool">
+                                                    <div class="d-flex align-items-center">
+                                                        <div v-on:click="admitProgress(task.hash)"class="bg-primary" style="width:20px;height:20px"></div>
+                                                        <div v-on:click="warnProgress(task.hash)"class="bg-warning" style="width:20px;height:20px"></div>
+                                                        <div v-on:click="click(task.hash)"  class="mx-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 8 8">
+                                                                <path fill="grey" d="M1.41 0l-1.41 1.41.72.72 1.78 1.81-1.78 1.78-.72.69 1.41 1.44.72-.72 1.81-1.81 1.78 1.81.69.72 1.44-1.44-.72-.69-1.81-1.78 1.81-1.81.72-.72-1.44-1.41-.69.72-1.78 1.78-1.81-1.78-.72-.72z"
+                                                                />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="border" style="text-align:center;width:30%">
+                                                0%
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
-                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll" onscroll="doScroll()Z">
+                            <div id="right-panel" class="col-9 p-0" style="overflow: scroll;" onscroll="doScroll()">
                                 <div id="rightVP" height="100%">
                                     <div id="ganttBoard" height="100%">
                                         <div id="bLayer" class="d-flex">
@@ -368,11 +382,15 @@
                                         <div id="fLayer" class="position-absolute" style="top:0">
                                             <div class="d-flex align-items-center" v-for="task in tasks" style="height:26px">
                                                 <div class="progress position-absolute" v-bind:style="{left:task.left+'px',width:task.width+'px'}">
-                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{width:task.progress+'%'}"
-                                                        aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar bg-success" role="progressbar" v-bind:style="{width:task.progress.success+'%'}"></div>
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{width:task.progress.primary+'%'}"></div>
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" v-bind:style="{width:task.progress.info+'%'}"></div>
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" v-bind:style="{width:task.progress.warning+'%'}"></div>
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" v-bind:style="{width:task.progress.danger+'%'}"></div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div id="deathLayer" class="position-absolute" style="top:0;background-color:red;width:1px" v-bind:style="{left:nowLeft+'px',height:ganttTimeTableHeight+'px'}"></div>
                                     </div>
                                 </div>
                             </div>

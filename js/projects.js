@@ -1,6 +1,32 @@
 var gantt = document.getElementById('gantt')
 gantt.style.height = window.innerHeight - document.getElementsByClassName('navbar')[0].clientHeight + 'px'
 var months = []
+moment.locale("zh");
+
+function getScrollbarWidth() {
+    var outer = document.createElement("div");
+    outer.style.visibility = "hidden";
+    outer.style.width = "100px";
+    outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+    document.body.appendChild(outer);
+
+    var widthNoScroll = outer.offsetWidth;
+    // force scrollbars
+    outer.style.overflow = "scroll";
+
+    // add innerdiv
+    var inner = document.createElement("div");
+    inner.style.width = "100%";
+    outer.appendChild(inner);
+
+    var widthWithScroll = inner.offsetWidth;
+
+    // remove divs
+    outer.parentNode.removeChild(outer);
+
+    return widthNoScroll - widthWithScroll;
+}
 
 for (let i = 0; i < 6; i++) {
     var newMonth = {}
@@ -14,42 +40,118 @@ for (let i = 0; i < 6; i++) {
     months.push(newMonth)
 }
 load()
-if (data.projects) {} else {
-    data.projects = {
+
+function getNewTask() {
+    var newTask = {
+        name: '',
+        type: '',
         start: '',
-        headHeight: 52,
-        taskBoardHeight: 0,
+        end: '',
+        progress: {
+            success: 0,
+            primary: 0,
+            info: 0,
+            warning: 0,
+            danger: 0
+        },
+        left: 0,
+        width: 0,
+        hash: '',
+        showTool: false
+    }
+    return newTask
+}
+
+function getNewProject() {
+    var newProject = {
+        start: '',
         ganttTimeTableHeight: '',
-        months: months,
+        months: [],
+        nowLeft: 0,
         tasks: [],
-        newTask: {
-            name: '',
-            type: '',
-            start: '',
-            end: '',
-            progress: 0,
-            //
-            left: 0,
-            width: 20,
-            hash: 20,
-            showLittleTool: false
+        newTask: getNewTask()
+    }
+    return newProject
+}
+if (data.projects) {
+    // 存档转换器
+    for (let i = 0; i < data.projects.tasks.length; i++) {
+        if (data.projects.tasks[i].progress) {} else {
+            data.projects.tasks[i].progress = {
+                success: 0,
+                primary: 0,
+                info: 0,
+                warning: 0,
+                danger: 0
+            }
+        }
+        if (data.projects.tasks[i].type == 'line') {
+            data.projects.tasks[i].type = 'normal'
         }
     }
+    save()
+} else {
+    data.projects = getNewProject()
+    data.projects.months = months
 }
+data.projects.nowLeft = 0
 data.projects.rightHeadWidth = 1000
-data.projects.ganttTimeTableHeight = 1000
 data.projects.ganttTimeTableHeight = data.projects.tasks.length * 26 + document.getElementById('right-panel').scrollHeight
 var gantt = new Vue({
     el: '#gantt',
     data: data.projects,
-    computed: {
-        rightHeadWidth: function () {
-            return document.getElementById('right-panel').clientWidth - document.getElementById('right-panel').scrollWidth
-        }
-    },
+    // computed: {
+    //     rightHeadWidth: function () {
+    //         return document.getElementById('right-panel').clientWidth - document.getElementById('right-panel').scrollWidth
+    //     }
+    // },
     methods: {
-        mouseOver: function (name) {
-            console.log(name);
+        mouseOver: function (hash) {
+            for (let i = 0; i < data.projects.tasks.length; i++) {
+                if (data.projects.tasks[i].hash == hash) {
+                    data.projects.tasks[i].showTool = true
+                }
+            }
+        },
+        mouseLeave: function (hash) {
+            for (let i = 0; i < data.projects.tasks.length; i++) {
+                if (data.projects.tasks[i].hash == hash) {
+                    data.projects.tasks[i].showTool = false
+                }
+            }
+        },
+        click: function (hash) {
+            for (let i = 0; i < data.projects.tasks.length; i++) {
+                if (data.projects.tasks[i].hash == hash) {
+                    // data.projects.tasks[i].showTool = false
+                    data.projects.tasks.splice(i, 1)
+                }
+            }
+            data.projects.ganttTimeTableHeight = data.projects.tasks.length * 26
+            save()
+        },
+        admitProgress: function (hash) {
+            for (let i = 0; i < data.projects.tasks.length; i++) {
+                if (data.projects.tasks[i].hash == hash) {
+                    // 现在减去开始 比上 结束减去开始
+                    console.log(moment(data.projects.tasks[i].start._i));
+                    var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
+                    var nowDuration = moment.duration(now.diff(moment(data.projects.tasks[i].start._i)))
+                    var totalDuration = moment.duration(moment(data.projects.tasks[i].end._i).diff(moment(data.projects.tasks[i].start._i)))
+                    var progress = nowDuration / totalDuration
+                    if (progress > 1) {
+                        progress = 1
+                    }
+                    data.projects.tasks[i].progress.primary = progress * 100
+                }
+            }
+        },
+        warnProgress: function (hash) {
+            for (let i = 0; i < data.projects.tasks.length; i++) {
+                if (data.projects.tasks[i].hash == hash) {
+                    console.log(data.projects.tasks[i]);
+                }
+            }
         }
     }
 
@@ -79,35 +181,47 @@ function adjust() {
     data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth - document.getElementById('right-panel').scrollWidth
 }
 document.getElementById('add-task').addEventListener('click', () => {
-    var newTask = JSON.parse(JSON.stringify(gantt.newTask))
+    // 新建Task
+    console.log(gantt.newTask);
+    
+    var newTask = gantt.newTask
     newTask.start = moment(newTask.start)
-    newTask.end = moment(document.getElementById('end-time').value)
+    newTask.end = moment(document.getElementById('end-time').value) // BUG
     var duration = moment.duration(newTask.end.diff(newTask.start))
-    if (newTask.type == 'point') {
+    if (newTask.type == 'milestone') {
         newTask.width = 20
-    } else if (newTask.type == 'line') {
+    } else if (newTask.type == 'normal') {
         newTask.width = (duration.asDays() + 1) * 20
     }
     var duration = moment.duration(newTask.start.diff(gantt.start))
     newTask.left = duration.asDays() * 20
-    console.log(gantt, newTask, duration, duration.asDays(), newTask.left);
+    // console.log(gantt, newTask, duration, duration.asDays(), newTask.left);
     newTask.name = (newTask.name == '') ? 'None' : newTask.name
     newTask.hash = getHash()
+    newTask.progress = {
+        success: 0,
+        primary: 0,
+        info: 0,
+        warning: 0,
+        danger: 0
+    }
     gantt.tasks.push(newTask)
     save()
-    gantt.taskBoardHeight = document.getElementById('bodys').clientHeight + 26
-    adjust()
+    // console.log(data.projects.tasks, document.getElementById('right-panel').scrollHeight);
+    data.projects.ganttTimeTableHeight = data.projects.tasks.length * 26
 })
-document.getElementById('projects').addEventListener('click', () => {
+// document.getElementById('projects').addEventListener('click', () => {
 
-    console.log(document.getElementById('right-panel').clientWidth, document.getElementById('right-panel').scrollWidth);
-    data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
-})
+//     console.log(document.getElementById('right-panel').clientWidth, document.getElementById('right-panel').scrollWidth);
+//     data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
+// })
 
 function doScroll() {
+    console.log(document.getElementById('right-head-scroll').scrollLeft);
+
     // data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
-    document.getElementById('right-head-scroll').scrollLeft = this.scrollLeft;
-    document.getElementById('left-panel').scrollTop = this.scrollTop;
+    document.getElementById('right-head-scroll').scrollLeft = document.getElementById('right-panel').scrollLeft;
+    document.getElementById('left-panel').scrollTop = document.getElementById('right-panel').scrollTop;
     data.projects.rightHeadWidth = document.getElementById('right-panel').clientWidth
 }
 document.getElementById('add-task-btn').addEventListener('click', () => {
@@ -119,3 +233,12 @@ document.getElementById('add-task-btn').addEventListener('click', () => {
     }
     fp.clear()
 })
+setInterval(timer, 1000);
+
+function timer() {
+    // 移动时间线
+    var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
+    var duration = moment.duration(now.diff(gantt.start))
+    gantt.nowLeft = duration.asDays() * 20
+    // 更新进度条
+}
