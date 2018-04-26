@@ -1,3 +1,4 @@
+Vue.config.devtools = true
 var gantt = document.getElementById('gantt')
 gantt.style.height = window.innerHeight - document.getElementsByClassName('navbar')[0].clientHeight + 'px'
 var months = []
@@ -69,13 +70,21 @@ function getNewProject() {
         months: [],
         nowLeft: 0,
         tasks: [],
+        pause: false,
         newTask: getNewTask()
     }
     return newProject
 }
 if (data.projects) {
     // 存档转换器
+    if (data.projects.pause) {
+        data.projects.pause = false
+    }
+    data.projects.newTask = getNewTask()
     for (let i = 0; i < data.projects.tasks.length; i++) {
+        if (!data.projects.tasks[i].wbs) {
+            data.projects.tasks[i].wbs = '#'
+        }
         if (data.projects.tasks[i].progress) {} else {
             data.projects.tasks[i].progress = {
                 success: 0,
@@ -138,20 +147,43 @@ var gantt = new Vue({
                     var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
                     var nowDuration = moment.duration(now.diff(moment(data.projects.tasks[i].start._i)))
                     var totalDuration = moment.duration(moment(data.projects.tasks[i].end._i).diff(moment(data.projects.tasks[i].start._i)))
-                    var progress = nowDuration / totalDuration
+                    console.log();
+                    var progress = (nowDuration.asDays()) / (totalDuration.asDays() + 1)
                     if (progress > 1) {
                         progress = 1
                     }
+                    data.projects.tasks[i].progress.info = 0
+                    data.projects.tasks[i].progress.warning = 0
                     data.projects.tasks[i].progress.primary = progress * 100
                 }
             }
+            save()
         },
         warnProgress: function (hash) {
             for (let i = 0; i < data.projects.tasks.length; i++) {
                 if (data.projects.tasks[i].hash == hash) {
-                    console.log(data.projects.tasks[i]);
+                    // 现在减去开始 比上 结束减去开始
+                    console.log(moment(data.projects.tasks[i].start._i));
+                    var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
+                    var nowDuration = moment.duration(now.diff(moment(data.projects.tasks[i].start._i)))
+                    var totalDuration = moment.duration(moment(data.projects.tasks[i].end._i).diff(moment(data.projects.tasks[i].start._i)))
+                    console.log();
+                    var progress = (nowDuration.asDays()) / (totalDuration.asDays() + 1)
+                    if (progress > 1) {
+                        progress = 1
+                    }
+                    data.projects.tasks[i].progress.info = 0
+                    progress = progress - data.projects.tasks[i].progress.primary / 100
+                    data.projects.tasks[i].progress.warning = progress * 100
                 }
             }
+            save()
+        },
+        stopTimer: function (event) {
+            data.projects.pause = true
+        },
+        startTimer: function (event) {
+            data.projects.pause = false
         }
     }
 
@@ -165,16 +197,16 @@ console.log(document.getElementById('right-head').getBoundingClientRect())
 gantt.start = moment(moment().format('Y-MM'), 'Y-MM')
 // const flatpickr = require("flatpickr");
 // flatpickr("#myID", {});
-var fp = flatpickr("#start-time", {
-    "locale": "zh",
-    "plugins": [new rangePlugin({
-        input: "#end-time"
-    })],
-    config: {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i"
-    }
-});
+// var fp = flatpickr("#start-time", {
+//     "locale": "zh",
+//     "plugins": [new rangePlugin({
+//         input: "#end-time"
+//     })],
+//     config: {
+//         enableTime: true,
+//         dateFormat: "Y-m-d H:i"
+//     }
+// });
 
 function adjust() {
     document.getElementById('right-panel').style.height = document.getElementById('gantt').clientHeight - document.getElementById('right-panel').offsetTop + 'px'
@@ -182,10 +214,9 @@ function adjust() {
 }
 document.getElementById('add-task').addEventListener('click', () => {
     // 新建Task
-    console.log(gantt.newTask);
-    
-    var newTask = gantt.newTask
-    newTask.start = moment(newTask.start)
+    console.log(gantt.newTask.start, document.getElementById('end-time').value);
+    var newTask = JSON.parse(JSON.stringify(gantt.newTask))
+    newTask.start = moment(document.getElementById('start-time').value) // BUG: 不能通过Vue获取参数
     newTask.end = moment(document.getElementById('end-time').value) // BUG
     var duration = moment.duration(newTask.end.diff(newTask.start))
     if (newTask.type == 'milestone') {
@@ -207,6 +238,7 @@ document.getElementById('add-task').addEventListener('click', () => {
     }
     gantt.tasks.push(newTask)
     save()
+    timer()
     // console.log(data.projects.tasks, document.getElementById('right-panel').scrollHeight);
     data.projects.ganttTimeTableHeight = data.projects.tasks.length * 26
 })
@@ -226,19 +258,47 @@ function doScroll() {
 }
 document.getElementById('add-task-btn').addEventListener('click', () => {
     gantt.newTask = {
+        wbs: '#',
         name: '',
         type: '',
         start: '',
         end: ''
     }
-    fp.clear()
+    // fp.clear()
 })
+
 setInterval(timer, 1000);
 
 function timer() {
-    // 移动时间线
-    var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
-    var duration = moment.duration(now.diff(gantt.start))
-    gantt.nowLeft = duration.asDays() * 20
-    // 更新进度条
+    if (!data.projects.pause) {
+        // 移动时间线
+        var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
+        var duration = moment.duration(now.diff(gantt.start))
+        gantt.nowLeft = duration.asDays() * 20
+        // 更新进度条
+        for (let i = 0; i < data.projects.tasks.length; i++) {
+            // 现在减去开始 比上 结束减去开始
+            var now = moment(moment().format('Y-MM-DD HH:mm:ss'), 'Y-MM-DD HH:mm:ss')
+            var nowDuration = moment.duration(now.diff(moment(data.projects.tasks[i].start._i)))
+            var totalDuration = moment.duration(moment(data.projects.tasks[i].end._i).diff(moment(data.projects.tasks[i].start._i)))
+            var progress = (nowDuration.asDays()) / (totalDuration.asDays() + 1)
+            if (progress > 1) {
+                progress = 1
+            }
+            progress = progress - data.projects.tasks[i].progress.primary / 100
+            progress = progress - data.projects.tasks[i].progress.warning / 100
+            data.projects.tasks[i].progress.info = progress * 100
+        }
+    }
 }
+$("#start-time").datepicker({
+    showWeek: true,
+    firstDay: 1,
+    dateFormat: 'yy-mm-dd'
+});
+$("#end-time").datepicker({
+    showWeek: true,
+    firstDay: 1,
+    dateFormat: 'yy-mm-dd'
+});
+timer()
